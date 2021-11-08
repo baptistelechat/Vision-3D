@@ -4,7 +4,9 @@ window.THREE = THREE;
 
 require("three/examples/js/controls/OrbitControls");
 
-export default {
+const threePackage = {
   ...THREE,
   OrbitControls: window.THREE.OrbitControls,
 };
+
+export default threePackage

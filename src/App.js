@@ -1,17 +1,18 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import THREE from "./3D/three";
 import { IFCLoader } from "web-ifc-three/IFCLoader";
 import "./App.css";
-// import wasmPath from "./wasm/web-ifc.wasm";
 
 const App = () => {
-  // const [wasmFile, setWasmFile] = useState(null);
-
+  const loaderRef = useRef();
+  const [IFCview, setIFCview] = useState(null);
   //Creates the Three.js scene
-  const scene = new THREE.Scene();
-
+  
   useEffect(() => {
-
+    const scene = new THREE.Scene();
+    setIFCview(scene)
+    loaderRef.current = new IFCLoader();
+    loaderRef.current.ifcManager.setWasmPath("../../");
     // loadWasm();
 
     //Object to store the size of the viewport
@@ -71,7 +72,7 @@ const App = () => {
     };
 
     animate();
-  });
+  }, []);
 
   // const loadWasm = async () => {
   //   try {
@@ -82,13 +83,15 @@ const App = () => {
   //   }
   // };
 
-  const handleChange = (event) => {
+  const handleChange = async (event) => {
     // Sets up the IFC loading
-    const ifcLoader = new IFCLoader();
-    ifcLoader.ifcManager.setWasmPath("../");
+    // const ifcLoader = new IFCLoader();
+    // ifcLoader.ifcManager.setWasmPath("../");
     const file = event.target.files[0];
     const ifcURL = URL.createObjectURL(file);
-    ifcLoader.load(ifcURL, (ifcModel) => scene.add(ifcModel.mesh));
+    console.log("loaderRef.current", loaderRef.current);
+    const object = await loaderRef.current.loadAsync(ifcURL);
+    IFCview.add(object)
     console.log(file);
   };
 
