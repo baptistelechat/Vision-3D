@@ -7,13 +7,13 @@ const App = () => {
   const loaderRef = useRef();
   const [IFCview, setIFCview] = useState(null);
   //Creates the Three.js scene
-  
+
   useEffect(() => {
     const scene = new THREE.Scene();
-    setIFCview(scene)
+    setIFCview(scene);
+    // Sets up the IFC loading
     loaderRef.current = new IFCLoader();
     loaderRef.current.ifcManager.setWasmPath("../../");
-    // loadWasm();
 
     //Object to store the size of the viewport
     const size = {
@@ -74,30 +74,52 @@ const App = () => {
     animate();
   }, []);
 
-  // const loadWasm = async () => {
-  //   try {
-  //     const wasm = await import("../public/web-ifc.wasm");
-  //     setWasmFile(wasm);
-  //   } catch (err) {
-  //     console.error(`Unexpected error in loadWasm. [Message: ${err.message}]`);
-  //   }
-  // };
+  const resetView = () => {
+    const selectedObject = IFCview.getObjectByName("IFCModel");
+    if (!(selectedObject instanceof THREE.Object3D)) return false;
+    // for better memory management and performance
+    if (selectedObject.geometry) {
+      selectedObject.geometry.dispose();
+    }
+    if (selectedObject.material) {
+      if (selectedObject.material instanceof Array) {
+        // for better memory management and performance
+        selectedObject.material.forEach((material) => material.dispose());
+      } else {
+        // for better memory management and performance
+        selectedObject.material.dispose();
+      }
+    }
+    if (selectedObject.parent) {
+      selectedObject.parent.remove(selectedObject);
+    }
+    // the parent might be the scene or another Object3D, but it is sure to be removed this way
+    return true;
+  };
 
   const handleChange = async (event) => {
-    // Sets up the IFC loading
-    // const ifcLoader = new IFCLoader();
-    // ifcLoader.ifcManager.setWasmPath("../");
+    await resetView()
     const file = event.target.files[0];
     const ifcURL = URL.createObjectURL(file);
-    console.log("loaderRef.current", loaderRef.current);
+    // console.log("loaderRef.current", loaderRef.current);
     const object = await loaderRef.current.loadAsync(ifcURL);
-    IFCview.add(object)
-    console.log(file);
+    object.name = "IFCModel";
+    IFCview.add(object);
+    // console.log(file);
   };
 
   return (
     <div>
-      <input type="file" name="load" id="file-input" onChange={handleChange} />
+      <input
+        type="file"
+        name="load"
+        id="file-input"
+        accept=".ifc"
+        onChange={handleChange}
+      />
+      <button id="file-remove" onClick={resetView}>
+        Reset
+      </button>
       <canvas id="three-canvas"></canvas>
     </div>
   );

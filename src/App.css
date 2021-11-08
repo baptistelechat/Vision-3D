@@ -20,3 +20,9 @@ body {
   z-index: 1;
   position: absolute;
 }
+
+#file-remove {
+  z-index: 1;
+  position: absolute;
+  top: 5%;
+}
