@@ -1,6 +1,11 @@
+// REACT
 import React, { useEffect, useRef, useState } from "react";
-import THREE from "./3D/three";
+// THREE.js
+import THREE from "./utils/threejs/three";
 import { IFCLoader } from "web-ifc-three/IFCLoader";
+// COMPONENTS
+import MicrosoftGraphApi from "./components/microsoft-graph-api/MicrosoftGraphAPI";
+// STYLES
 import "./App.css";
 
 const App = () => {
@@ -98,29 +103,35 @@ const App = () => {
   };
 
   const handleChange = async (event) => {
-    await resetView()
-    const file = event.target.files[0];
-    const ifcURL = URL.createObjectURL(file);
-    // console.log("loaderRef.current", loaderRef.current);
-    const object = await loaderRef.current.loadAsync(ifcURL);
-    object.name = "IFCModel";
-    IFCview.add(object);
-    // console.log(file);
+    const { target } = event;
+    if (target.value.length > 0) {
+      await resetView();
+      const file = event.target.files[0];
+      const ifcURL = URL.createObjectURL(file);
+      const object = await loaderRef.current.loadAsync(ifcURL);
+      object.name = "IFCModel";
+      IFCview.add(object);
+    }
   };
 
   return (
     <div>
-      <input
-        type="file"
-        name="load"
-        id="file-input"
-        accept=".ifc"
-        onChange={handleChange}
-      />
-      <button id="file-remove" onClick={resetView}>
-        Reset
-      </button>
-      <canvas id="three-canvas"></canvas>
+      <div>
+        <input
+          type="file"
+          name="load"
+          id="file-input"
+          accept=".ifc"
+          onChange={handleChange}
+        />
+        <button id="file-remove" onClick={resetView}>
+          Reset
+        </button>
+        <MicrosoftGraphApi IFCview={IFCview} loaderRef={loaderRef} />
+      </div>
+      <div style={{ width: "50%" }}>
+        <canvas id="three-canvas"></canvas>
+      </div>
     </div>
   );
 };

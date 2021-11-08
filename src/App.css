@@ -1,4 +1,4 @@
-* {
+/* * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -7,9 +7,9 @@
 html,
 body {
   overflow: hidden;
-}
+} */
 
-#three-canvas {
+/* #three-canvas {
   position: fixed;
   top: 0;
   left: 0;
@@ -17,12 +17,14 @@ body {
 }
 
 #file-input {
+  display: none;
   z-index: 1;
   position: absolute;
 }
 
 #file-remove {
+  display: none;
   z-index: 1;
   position: absolute;
   top: 5%;
-}
+} */
