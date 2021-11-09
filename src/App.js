@@ -8,6 +8,8 @@ import MicrosoftGraphApi from "./components/microsoft-graph-api/MicrosoftGraphAP
 // STYLES
 import "./App.css";
 
+require("dotenv").config();
+
 const App = () => {
   const loaderRef = useRef();
   const [IFCview, setIFCview] = useState(null);
@@ -114,18 +116,44 @@ const App = () => {
     }
   };
 
+  const launchOneDrivePicker = () => {
+    console.log("ok");
+    let odOptions = {
+      clientId: "d4da3f4f-61d0-4603-9ecf-dcadb0e84754",
+      action: "query",
+      // multiSelect: true,
+      advanced: {},
+      success: function (files) {
+        console.log(files);
+      },
+      progress: function (percent) {
+        console.log(percent);
+      },
+      cancel: function () {
+        /* cancel handler */
+      },
+      error: function (error) {
+        console.log(error);
+      },
+    };
+    window.OneDrive.open(odOptions);
+  };
+
   return (
     <div>
       <div>
         <input
           type="file"
-          name="load"
+          name="share"
           id="file-input"
           accept=".ifc"
           onChange={handleChange}
         />
         <button id="file-remove" onClick={resetView}>
           Reset
+        </button>
+        <button id="file-remove" onClick={launchOneDrivePicker}>
+          OneDrive
         </button>
         <MicrosoftGraphApi IFCview={IFCview} loaderRef={loaderRef} />
       </div>
