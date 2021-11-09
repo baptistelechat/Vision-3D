@@ -4,14 +4,8 @@ import "./index.css";
 import App from "./App";
 import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 import reportWebVitals from "./reportWebVitals";
-// MICROSOFT GRAPH API
-import { PublicClientApplication } from "@azure/msal-browser";
-import { MsalProvider } from "@azure/msal-react";
-import { msalConfig } from "./utils/microsoftAPI/authConfig";
 // OTHER
 import { Helmet } from "react-helmet";
-
-const msalInstance = new PublicClientApplication(msalConfig);
 
 ReactDOM.render(
   <React.StrictMode>
@@ -21,9 +15,7 @@ ReactDOM.render(
         src="https://js.live.net/v7.2/OneDrive.js"
       />
     </Helmet>
-    <MsalProvider instance={msalInstance}>
-      <App />
-    </MsalProvider>
+    <App />
   </React.StrictMode>,
   document.getElementById("root")
 );

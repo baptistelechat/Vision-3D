@@ -1,7 +1,7 @@
 // REACT
 import React, { useEffect, useRef, useState } from "react";
 // THREE.js
-import THREE from "./utils/threejs/three";
+import THREE from "./utils/three";
 import { IFCLoader } from "web-ifc-three/IFCLoader";
 // COMPONENTS
 import MicrosoftGraphApi from "./components/microsoft-graph-api/MicrosoftGraphAPI";
@@ -116,32 +116,9 @@ const App = () => {
     }
   };
 
-  const launchOneDrivePicker = () => {
-    console.log("ok");
-    let odOptions = {
-      clientId: "d4da3f4f-61d0-4603-9ecf-dcadb0e84754",
-      action: "query",
-      // multiSelect: true,
-      advanced: {},
-      success: function (files) {
-        console.log(files);
-      },
-      progress: function (percent) {
-        console.log(percent);
-      },
-      cancel: function () {
-        /* cancel handler */
-      },
-      error: function (error) {
-        console.log(error);
-      },
-    };
-    window.OneDrive.open(odOptions);
-  };
-
   return (
     <div>
-      <div>
+      <div className="container">
         <input
           type="file"
           name="share"
@@ -152,10 +129,12 @@ const App = () => {
         <button id="file-remove" onClick={resetView}>
           Reset
         </button>
-        <button id="file-remove" onClick={launchOneDrivePicker}>
-          OneDrive
-        </button>
-        <MicrosoftGraphApi IFCview={IFCview} loaderRef={loaderRef} />
+
+        <MicrosoftGraphApi
+          IFCview={IFCview}
+          loaderRef={loaderRef}
+          resetView={resetView}
+        />
       </div>
       <div style={{ width: "50%" }}>
         <canvas id="three-canvas"></canvas>
