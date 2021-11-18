@@ -4,11 +4,9 @@ import React, { useEffect, useRef, useState } from "react";
 import THREE from "./utils/three";
 import { IFCLoader } from "web-ifc-three/IFCLoader";
 // COMPONENTS
-import MicrosoftGraphApi from "./components/microsoft-graph-api/MicrosoftGraphAPI";
+import LoadFile from "./components/LoadFile.jsx";
 // STYLES
 import "./App.css";
-
-require("dotenv").config();
 
 const App = () => {
   const loaderRef = useRef();
@@ -104,41 +102,10 @@ const App = () => {
     return true;
   };
 
-  const handleChange = async (event) => {
-    const { target } = event;
-    if (target.value.length > 0) {
-      await resetView();
-      const file = event.target.files[0];
-      const ifcURL = URL.createObjectURL(file);
-      const object = await loaderRef.current.loadAsync(ifcURL);
-      object.name = "IFCModel";
-      IFCview.add(object);
-    }
-  };
-
   return (
     <div>
-      <div className="container">
-        <input
-          type="file"
-          name="share"
-          id="file-input"
-          accept=".ifc"
-          onChange={handleChange}
-        />
-        <button id="file-remove" onClick={resetView}>
-          Reset
-        </button>
-
-        <MicrosoftGraphApi
-          IFCview={IFCview}
-          loaderRef={loaderRef}
-          resetView={resetView}
-        />
-      </div>
-      <div style={{ width: "50%" }}>
-        <canvas id="three-canvas"></canvas>
-      </div>
+      <LoadFile IFCview={IFCview} loaderRef={loaderRef} resetView={resetView} />
+      <canvas id="three-canvas"></canvas>
     </div>
   );
 };

@@ -10,6 +10,7 @@ body {
 }
 
 .container {
+  z-index: 1;
   margin-top: 10px;
   margin-left: 10px;
 }
@@ -21,15 +22,16 @@ body {
   outline: none;
 }
 
-#file-input {
+/* #file-input {
   z-index: 1;
   position: absolute;
   font-size: 17px;
 }
 
 #file-remove {
+  display: none;
   z-index: 1;
   position: absolute;
   top: 6%;
   font-size: 17px;
-}
+} */
