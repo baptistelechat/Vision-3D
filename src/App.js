@@ -1,7 +1,7 @@
 // REACT
 import React, { useEffect, useRef, useState } from "react";
 // THREE.js
-import THREE from "./utils/three";
+import THREE from "./utils/three/three";
 import { IFCLoader } from "web-ifc-three/IFCLoader";
 // COMPONENTS
 import LoadFile from "./components/LoadFile.jsx";
@@ -18,7 +18,12 @@ const App = () => {
     setIFCview(scene);
     // Sets up the IFC loading
     loaderRef.current = new IFCLoader();
+    loaderRef.current.ifcManager.useWebWorkers(true, "../../IFCWorker.js");
     loaderRef.current.ifcManager.setWasmPath("../../");
+    loaderRef.current.ifcManager.applyWebIfcConfig({
+      COORDINATE_TO_ORIGIN: true,
+      USE_FAST_BOOLS: false,
+    });
 
     //Object to store the size of the viewport
     const size = {
@@ -79,32 +84,9 @@ const App = () => {
     animate();
   }, []);
 
-  const resetView = () => {
-    const selectedObject = IFCview.getObjectByName("IFCModel");
-    if (!(selectedObject instanceof THREE.Object3D)) return false;
-    // for better memory management and performance
-    if (selectedObject.geometry) {
-      selectedObject.geometry.dispose();
-    }
-    if (selectedObject.material) {
-      if (selectedObject.material instanceof Array) {
-        // for better memory management and performance
-        selectedObject.material.forEach((material) => material.dispose());
-      } else {
-        // for better memory management and performance
-        selectedObject.material.dispose();
-      }
-    }
-    if (selectedObject.parent) {
-      selectedObject.parent.remove(selectedObject);
-    }
-    // the parent might be the scene or another Object3D, but it is sure to be removed this way
-    return true;
-  };
-
   return (
     <div>
-      <LoadFile IFCview={IFCview} loaderRef={loaderRef} resetView={resetView} />
+      <LoadFile IFCview={IFCview} loaderRef={loaderRef} />
       <canvas id="three-canvas"></canvas>
     </div>
   );
