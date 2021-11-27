@@ -14,10 +14,13 @@ ReactDOM.render(
         type="text/javascript"
         src="https://js.live.net/v7.2/OneDrive.js"
       />
+      <script type="text/javascript" src="https://apis.google.com/js/api.js" />
       <script
         type="text/javascript"
-        src="https://apis.google.com/js/api.js"
-      />
+        src="https://www.dropbox.com/static/api/2/dropins.js"
+        id="dropboxjs"
+        data-app-key={process.env.REACT_APP_DROPBOX_APP_KEY}
+      ></script>
     </Helmet>
     <App />
   </React.StrictMode>,
