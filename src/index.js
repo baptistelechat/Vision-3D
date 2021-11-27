@@ -14,6 +14,10 @@ ReactDOM.render(
         type="text/javascript"
         src="https://js.live.net/v7.2/OneDrive.js"
       />
+      <script
+        type="text/javascript"
+        src="https://apis.google.com/js/api.js"
+      />
     </Helmet>
     <App />
   </React.StrictMode>,

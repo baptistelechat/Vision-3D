@@ -4,8 +4,6 @@ import React from "react";
 import Backdrop from "@mui/material/Backdrop";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-// COLORS
-import { blue } from "@mui/material/colors";
 // LOTTIE FILES
 import Lottie from "react-lottie";
 
