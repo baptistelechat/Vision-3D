@@ -2,6 +2,8 @@
 import React, { useState } from "react";
 // THREE.js
 import THREE from "../utils/three/three";
+// NOTISTACK
+import { useSnackbar } from "notistack";
 // MATERIAL UI
 import SpeedDial from "@mui/material/SpeedDial";
 import SpeedDialIcon from "@mui/material/SpeedDialIcon";
@@ -29,6 +31,7 @@ const LoadFile = ({ IFCview, loaderRef }) => {
   const [openProgress, setOpenProgress] = useState(false);
   const [percentProgress, setPercentProgress] = useState("Chargement ...");
   const [randomLottieFile, setRandomLottieFile] = useState(1);
+  const { enqueueSnackbar } = useSnackbar();
 
   const randomLottie = () => {
     const rand = Math.ceil(Math.random() * 20);
@@ -151,24 +154,44 @@ const LoadFile = ({ IFCview, loaderRef }) => {
     if (data.action === window.google.picker.Action.PICKED) {
       var fileId = data.docs[0].id;
       var url = "https://www.googleapis.com/drive/v2/files/" + fileId;
-      getData(url, (responseText) => {
+      getData(url, async (responseText) => {
         var metaData = JSON.parse(responseText);
-        getData(metaData.downloadUrl, async (text) => {
-          console.log(text);
-          const blob = new Blob([text]);
-          await randomLottie();
-          await setOpenProgress(true);
-          await resetView();
-          loaderRef.current.ifcManager.setOnProgress((event) =>
-            loadingFileProgress(event)
+        if (metaData.title.substr(metaData.title.length - 3) === "ifc") {
+          getData(metaData.downloadUrl, async (text) => {
+            console.log(text);
+            const blob = new Blob([text]);
+            await randomLottie();
+            await setOpenProgress(true);
+            await resetView();
+            loaderRef.current.ifcManager.setOnProgress((event) =>
+              loadingFileProgress(event)
+            );
+            const ifcURL = URL.createObjectURL(blob);
+            const object = await loaderRef.current.loadAsync(ifcURL);
+            object.name = "IFCModel";
+            IFCview.add(object);
+            setOpenProgress(false);
+            setPercentProgress("Chargement ...");
+
+            enqueueSnackbar(
+              `${metaData.title} (${(
+                metaData.fileSize / Math.pow(10, 6)
+              ).toFixed(2)} Mo) chargé avec succès`,
+              {
+                variant: "success",
+              }
+            );
+          });
+        } else {
+          enqueueSnackbar(
+            `${metaData.title} (${(
+              metaData.fileSize / Math.pow(10, 6)
+            ).toFixed(2)} Mo) n'est pas un fichier IFC`,
+            {
+              variant: "error",
+            }
           );
-          const ifcURL = URL.createObjectURL(blob);
-          const object = await loaderRef.current.loadAsync(ifcURL);
-          object.name = "IFCModel";
-          IFCview.add(object);
-          setOpenProgress(false);
-          setPercentProgress("Chargement ...");
-        });
+        }
       });
     }
   };
@@ -190,7 +213,8 @@ const LoadFile = ({ IFCview, loaderRef }) => {
               loaderRef,
               loadingFileProgress,
               setOpenProgress,
-              setPercentProgress
+              setPercentProgress,
+              enqueueSnackbar
             )
           }
         />
@@ -247,7 +271,8 @@ const LoadFile = ({ IFCview, loaderRef }) => {
               loaderRef,
               loadingFileProgress,
               setOpenProgress,
-              setPercentProgress
+              setPercentProgress,
+              enqueueSnackbar
             )
           }
         />
@@ -272,7 +297,8 @@ const LoadFile = ({ IFCview, loaderRef }) => {
               loaderRef,
               loadingFileProgress,
               setOpenProgress,
-              setPercentProgress
+              setPercentProgress,
+              enqueueSnackbar
             )
           }
         />

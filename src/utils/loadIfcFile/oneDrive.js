@@ -5,7 +5,8 @@ const openOneDrivePicker = async (
   loaderRef,
   loadingFileProgress,
   setOpenProgress,
-  setPercentProgress
+  setPercentProgress,
+  enqueueSnackbar
 ) => {
   let odOptions = {
     clientId: process.env.REACT_APP_MS_GRAPH_CLIENT_ID,
@@ -26,6 +27,14 @@ const openOneDrivePicker = async (
       IFCview.add(object);
       setOpenProgress(false);
       setPercentProgress("Chargement ...");
+      enqueueSnackbar(
+        `${files.value[0].name} (${(files.value[0].size / Math.pow(10, 6)).toFixed(
+          2
+        )} Mo) chargé avec succès`,
+        {
+          variant: "success",
+        }
+      );
     },
     progress: function (percent) {
       console.log(percent);

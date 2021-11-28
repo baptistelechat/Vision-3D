@@ -1,8 +1,12 @@
 // REACT
 import React, { useEffect, useRef, useState } from "react";
+// MATERIAL UI
+import Slide from "@mui/material/Slide";
 // THREE.js
 import THREE from "./utils/three/three";
 import { IFCLoader } from "web-ifc-three/IFCLoader";
+// NOTISTACK
+import { SnackbarProvider } from "notistack";
 // COMPONENTS
 import LoadFile from "./components/LoadFile.jsx";
 // STYLES
@@ -11,8 +15,8 @@ import "./App.css";
 const App = () => {
   const loaderRef = useRef();
   const [IFCview, setIFCview] = useState(null);
-  //Creates the Three.js scene
 
+  //Creates the Three.js scene
   useEffect(() => {
     const scene = new THREE.Scene();
     setIFCview(scene);
@@ -85,10 +89,17 @@ const App = () => {
   }, []);
 
   return (
-    <div>
+    <SnackbarProvider
+      maxSnack={5}
+      anchorOrigin={{
+        vertical: "bottom",
+        horizontal: "left",
+      }}
+      TransitionComponent={Slide}
+    >
       <LoadFile IFCview={IFCview} loaderRef={loaderRef} />
       <canvas id="three-canvas"></canvas>
-    </div>
+    </SnackbarProvider>
   );
 };
 

@@ -7,6 +7,7 @@ const openLocalFile = async (
   loadingFileProgress,
   setOpenProgress,
   setPercentProgress,
+  enqueueSnackbar
 ) => {
   await randomLottie();
   await setOpenProgress(true);
@@ -28,6 +29,14 @@ const openLocalFile = async (
     IFCview.add(object);
     setOpenProgress(false);
     setPercentProgress("Chargement ...");
+    enqueueSnackbar(
+      `${file.name} (${(file.size / Math.pow(10, 6)).toFixed(
+        2
+      )} Mo) chargé avec succès`,
+      {
+        variant: "success",
+      }
+    );
   }
 };
 

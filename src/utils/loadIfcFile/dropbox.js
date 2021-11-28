@@ -6,7 +6,8 @@ const openDropboxPicker = async (
   loaderRef,
   loadingFileProgress,
   setOpenProgress,
-  setPercentProgress
+  setPercentProgress,
+  enqueueSnackbar
 ) => {
   const options = {
     // Required. Called when a user selects an item in the Chooser.
@@ -27,6 +28,14 @@ const openDropboxPicker = async (
       IFCview.add(object);
       setOpenProgress(false);
       setPercentProgress("Chargement ...");
+      enqueueSnackbar(
+        `${files[0].name} (${(files[0].bytes / Math.pow(10, 6)).toFixed(
+          2
+        )} Mo) chargé avec succès`,
+        {
+          variant: "success",
+        }
+      );
     },
 
     // Optional. Called when the user closes the dialog without selecting a file
