@@ -5,10 +5,12 @@ import Slide from "@mui/material/Slide";
 // THREE.js
 import THREE from "./utils/three/three";
 import { IFCLoader } from "web-ifc-three/IFCLoader";
-// NOTISTACK
-import { SnackbarProvider } from "notistack";
 // COMPONENTS
 import LoadFile from "./components/LoadFile.jsx";
+import Settings from "./components/Settings";
+// OTHER
+import { SnackbarProvider } from "notistack";
+import { Toaster } from "react-hot-toast";
 // STYLES
 import "./App.css";
 
@@ -97,6 +99,8 @@ const App = () => {
       }}
       TransitionComponent={Slide}
     >
+      <Toaster position="top-left" reverseOrder={true} />
+      <Settings/>
       <LoadFile IFCview={IFCview} loaderRef={loaderRef} />
       <canvas id="three-canvas"></canvas>
     </SnackbarProvider>
