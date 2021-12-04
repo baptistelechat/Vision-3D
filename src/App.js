@@ -90,6 +90,20 @@ const App = () => {
     animate();
   }, []);
 
+  function dropHandler(ev) {
+    // Prevent default behavior (Prevent file from being opened)
+    ev.preventDefault();
+
+    document.getElementById("dropZone").style.display = "flex";
+  }
+
+  function dragOverHandler(ev) {
+    // Prevent default behavior (Prevent file from being opened)
+    ev.preventDefault();
+
+    document.getElementById("dropZone").style.display = "flex";
+  }
+
   return (
     <SnackbarProvider
       maxSnack={5}
@@ -100,9 +114,13 @@ const App = () => {
       TransitionComponent={Slide}
     >
       <Toaster position="top-left" reverseOrder={true} />
-      <Settings/>
+      <Settings />
       <LoadFile IFCview={IFCview} loaderRef={loaderRef} />
-      <canvas id="three-canvas"></canvas>
+      <canvas
+        id="three-canvas"
+        onDrop={(event) => dropHandler(event)}
+        onDragOver={(event) => dragOverHandler(event)}
+      ></canvas>
     </SnackbarProvider>
   );
 };

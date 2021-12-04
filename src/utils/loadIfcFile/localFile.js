@@ -15,6 +15,12 @@ const openLocalFile = async (
   if (target.value.length > 0) {
     await resetView();
     const file = event.target.files[0];
+    enqueueSnackbar(
+      `${file.name} en cours de traitement, veuillez patienter...`,
+      {
+        variant: "info",
+      }
+    );
     loaderRef.current.ifcManager.setOnProgress((event) =>
       loadingFileProgress(event)
     );

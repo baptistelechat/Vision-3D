@@ -19,6 +19,12 @@ const openOneDrivePicker = async (
       await randomLottie();
       await resetView();
       const ifcURL = files.value[0]["@microsoft.graph.downloadUrl"];
+      enqueueSnackbar(
+        `${files.value[0].name} en cours de traitement, veuillez patienter...`,
+        {
+          variant: "info",
+        }
+      );
       loaderRef.current.ifcManager.setOnProgress((event) =>
         loadingFileProgress(event)
       );

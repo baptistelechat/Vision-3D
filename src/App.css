@@ -1,8 +1,13 @@
-/* * {
+* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-} */
+  -webkit-user-select: none; /* for safari & chrome browsers */
+  -moz-user-select: none; /* for mozilla browsers */
+  -khtml-user-select: none; /* for konqueror browsers */
+  -ms-user-select: none; /* for IE10+ */
+  user-select: none;
+}
 
 html,
 body {

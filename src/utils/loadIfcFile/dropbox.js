@@ -12,10 +12,14 @@ const openDropboxPicker = async (
   const options = {
     // Required. Called when a user selects an item in the Chooser.
     success: async (files) => {
-      await randomLottie();
-      await setOpenProgress(true);
       await resetView();
       const ifcUrl = files[0].link;
+      enqueueSnackbar(
+        `${files[0].name} en cours de traitement, veuillez patienter...`,
+        {
+          variant: "info",
+        }
+      );
       loaderRef.current.ifcManager.setOnProgress((event) =>
         loadingFileProgress(event)
       );
@@ -73,6 +77,8 @@ const openDropboxPicker = async (
     // For the purposes of this option, folders have size zero.
     // sizeLimit: 1024, // or any positive number
   };
+  randomLottie();
+  setOpenProgress(true);
   window.Dropbox.choose(options);
 };
 

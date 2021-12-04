@@ -13,7 +13,8 @@ import { blueGrey, blue } from "@mui/material/colors";
 // MATERIAL UI ICON
 import CloudIcon from "@mui/icons-material/Cloud";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
-// FONT AWESOME
+import AttachmentIcon from "@mui/icons-material/Attachment";
+//FONT AWESOME
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faWindows,
@@ -22,6 +23,9 @@ import {
 } from "@fortawesome/free-brands-svg-icons";
 //COMPONENTS
 import Progress from "./Progress";
+import DropZoneDialog from "./DropZoneDialog";
+import DropZone from "./DropZone";
+
 // UTILS
 import openLocalFile from "../utils/loadIfcFile/localFile";
 import openOneDrivePicker from "../utils/loadIfcFile/oneDrive";
@@ -31,8 +35,8 @@ const LoadFile = ({ IFCview, loaderRef }) => {
   const [openProgress, setOpenProgress] = useState(false);
   const [percentProgress, setPercentProgress] = useState("Chargement ...");
   const [randomLottieFile, setRandomLottieFile] = useState(1);
+  const [openDropZone, setOpenDropZone] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
-
   const randomLottie = () => {
     const rand = Math.ceil(Math.random() * 20);
     console.log(rand);
@@ -163,6 +167,12 @@ const LoadFile = ({ IFCview, loaderRef }) => {
             await randomLottie();
             await setOpenProgress(true);
             await resetView();
+            enqueueSnackbar(
+              `${metaData.title} en cours de traitement, veuillez patienter...`,
+              {
+                variant: "info",
+              }
+            );
             loaderRef.current.ifcManager.setOnProgress((event) =>
               loadingFileProgress(event)
             );
@@ -184,9 +194,9 @@ const LoadFile = ({ IFCview, loaderRef }) => {
           });
         } else {
           enqueueSnackbar(
-            `${metaData.title} (${(
-              metaData.fileSize / Math.pow(10, 6)
-            ).toFixed(2)} Mo) n'est pas un fichier IFC`,
+            `${metaData.title} (${(metaData.fileSize / Math.pow(10, 6)).toFixed(
+              2
+            )} Mo) n'est pas un fichier IFC`,
             {
               variant: "error",
             }
@@ -260,6 +270,16 @@ const LoadFile = ({ IFCview, loaderRef }) => {
   const actions = [
     {
       icon: (
+        <AttachmentIcon
+          sx={{ fontSize: 30, color: blue[800] }}
+          onClick={() => setOpenDropZone(true)}
+        />
+      ),
+      name: "Dropzone",
+      disabled: false,
+    },
+    {
+      icon: (
         <CloudIcon
           icon={faWindows}
           sx={{ color: blue[800] }}
@@ -315,6 +335,28 @@ const LoadFile = ({ IFCview, loaderRef }) => {
         setOpenProgress={setOpenProgress}
         percentProgress={percentProgress}
         randomLottieFile={randomLottieFile}
+      />
+      <DropZoneDialog
+        openDropZone={openDropZone}
+        setOpenDropZone={setOpenDropZone}
+        randomLottie={randomLottie}
+        resetView={resetView}
+        IFCview={IFCview}
+        loaderRef={loaderRef}
+        loadingFileProgress={loadingFileProgress}
+        setOpenProgress={setOpenProgress}
+        setPercentProgress={setPercentProgress}
+        enqueueSnackbar={enqueueSnackbar}
+      />
+      <DropZone
+        randomLottie={randomLottie}
+        resetView={resetView}
+        IFCview={IFCview}
+        loaderRef={loaderRef}
+        loadingFileProgress={loadingFileProgress}
+        setOpenProgress={setOpenProgress}
+        setPercentProgress={setPercentProgress}
+        enqueueSnackbar={enqueueSnackbar}
       />
       <SpeedDial
         ariaLabel="SpeedDial"
