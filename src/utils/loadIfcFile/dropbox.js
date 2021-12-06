@@ -12,34 +12,48 @@ const openDropboxPicker = async (
   const options = {
     // Required. Called when a user selects an item in the Chooser.
     success: async (files) => {
-      await resetView();
-      const ifcUrl = files[0].link;
-      enqueueSnackbar(
-        `${files[0].name} en cours de traitement, veuillez patienter...`,
-        {
-          variant: "info",
+      const extension = files[0].name.substr(files[0].name.length - 3);
+      if (extension === "ifc") {
+        await resetView();
+        const ifcUrl = files[0].link;
+        enqueueSnackbar(
+          `${files[0].name} en cours de traitement, veuillez patienter...`,
+          {
+            variant: "info",
+          }
+        );
+        loaderRef.current.ifcManager.setOnProgress((event) =>
+          loadingFileProgress(event)
+        );
+        // Get content of link
+        getData(ifcUrl, (responseText) => {
+          console.log(responseText);
+        });
+        const object = await loaderRef.current.loadAsync(ifcUrl + "?dl=1");
+        object.name = "IFCModel";
+        IFCview.add(object);
+        setOpenProgress(false);
+        setPercentProgress("Chargement ...");
+        enqueueSnackbar(
+          `${files[0].name} (${(files[0].bytes / Math.pow(10, 6)).toFixed(
+            2
+          )} Mo) chargé avec succès`,
+          {
+            variant: "success",
+          }
+        );
+      } else {
+        enqueueSnackbar(`${files[0].name} n'est pas un fichier IFC valide`, {
+          variant: "error",
+        });
+        await setOpenProgress(false);
+        const isMobile =
+          "ontouchstart" in document.documentElement &&
+          navigator.userAgent.match(/Mobi/);
+        if (!isMobile) {
+          document.getElementById("dropZone").style.display = "none";
         }
-      );
-      loaderRef.current.ifcManager.setOnProgress((event) =>
-        loadingFileProgress(event)
-      );
-      // Get content of link
-      getData(ifcUrl, (responseText) => {
-        console.log(responseText);
-      });
-      const object = await loaderRef.current.loadAsync(ifcUrl + "?dl=1");
-      object.name = "IFCModel";
-      IFCview.add(object);
-      setOpenProgress(false);
-      setPercentProgress("Chargement ...");
-      enqueueSnackbar(
-        `${files[0].name} (${(files[0].bytes / Math.pow(10, 6)).toFixed(
-          2
-        )} Mo) chargé avec succès`,
-        {
-          variant: "success",
-        }
-      );
+      }
     },
 
     // Optional. Called when the user closes the dialog without selecting a file

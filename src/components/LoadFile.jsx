@@ -37,6 +37,11 @@ const LoadFile = ({ IFCview, loaderRef }) => {
   const [randomLottieFile, setRandomLottieFile] = useState(1);
   const [openDropZone, setOpenDropZone] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
+
+  const isMobile =
+    "ontouchstart" in document.documentElement &&
+    navigator.userAgent.match(/Mobi/);
+
   const randomLottie = () => {
     const rand = Math.ceil(Math.random() * 20);
     console.log(rand);
@@ -201,6 +206,13 @@ const LoadFile = ({ IFCview, loaderRef }) => {
               variant: "error",
             }
           );
+          await setOpenProgress(false);
+          const isMobile =
+            "ontouchstart" in document.documentElement &&
+            navigator.userAgent.match(/Mobi/);
+          if (!isMobile) {
+            document.getElementById("dropZone").style.display = "none";
+          }
         }
       });
     }
@@ -268,16 +280,6 @@ const LoadFile = ({ IFCview, loaderRef }) => {
   };
 
   const actions = [
-    {
-      icon: (
-        <AttachmentIcon
-          sx={{ fontSize: 30, color: blue[800] }}
-          onClick={() => setOpenDropZone(true)}
-        />
-      ),
-      name: "Dropzone",
-      disabled: false,
-    },
     {
       icon: (
         <CloudIcon
@@ -348,20 +350,29 @@ const LoadFile = ({ IFCview, loaderRef }) => {
         setPercentProgress={setPercentProgress}
         enqueueSnackbar={enqueueSnackbar}
       />
-      <DropZone
-        randomLottie={randomLottie}
-        resetView={resetView}
-        IFCview={IFCview}
-        loaderRef={loaderRef}
-        loadingFileProgress={loadingFileProgress}
-        setOpenProgress={setOpenProgress}
-        setPercentProgress={setPercentProgress}
-        enqueueSnackbar={enqueueSnackbar}
-      />
+      {isMobile ? null : (
+        <DropZone
+          randomLottie={randomLottie}
+          resetView={resetView}
+          IFCview={IFCview}
+          loaderRef={loaderRef}
+          loadingFileProgress={loadingFileProgress}
+          setOpenProgress={setOpenProgress}
+          setPercentProgress={setPercentProgress}
+          enqueueSnackbar={enqueueSnackbar}
+        />
+      )}
       <SpeedDial
         ariaLabel="SpeedDial"
         sx={{ position: "absolute", bottom: 24, right: 24 }}
         icon={<SpeedDialIcon />}
+        direction={
+          isMobile && (window.orientation === 90 || window.orientation === -90)
+            ? "left"
+            : isMobile && (window.orientation !== 90 || window.orientation !== -90)
+            ? "up"
+            : "up"
+        }
       >
         <UploadLocalFileSpeedDialAction
           FabProps={{
@@ -372,6 +383,27 @@ const LoadFile = ({ IFCview, loaderRef }) => {
             },
           }}
         />
+        {!isMobile ? (
+          <SpeedDialAction
+            key="DropZone"
+            icon={
+              <AttachmentIcon
+                sx={{ fontSize: 30, color: blue[800] }}
+                onClick={() => setOpenDropZone(true)}
+              />
+            }
+            tooltipTitle="DropZone"
+            FabProps={{
+              size: "large",
+              style: {
+                fontSize: "1.5em",
+                backgroundColor: blue[50],
+              },
+              disabled: false,
+            }}
+          />
+        ) : null}
+        )}
         {actions.map((action) =>
           action.name === "Google Drive" ? (
             <UploadGDriveFileSpeedDialAction

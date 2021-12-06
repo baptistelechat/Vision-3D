@@ -93,7 +93,7 @@ const DropZone = ({
       {...getRootProps()}
       id="dropZone"
       style={{
-        display: "flex",
+        display: "none",
         justifyContent: "center",
         alignItems: "center",
         backgroundColor: isDragActive

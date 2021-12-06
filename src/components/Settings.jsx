@@ -24,6 +24,10 @@ const Settings = () => {
   const [promptInstall, setPromptInstall] = useState(null);
   const { enqueueSnackbar } = useSnackbar();
 
+  const isMobile =
+    "ontouchstart" in document.documentElement &&
+    navigator.userAgent.match(/Mobi/);
+
   useEffect(() => {
     const handler = (e) => {
       e.preventDefault();
@@ -124,7 +128,13 @@ Application créée par Baptiste LECHAT et Matthieu LECHAT`,
       ariaLabel="SpeedDial"
       sx={{ position: "absolute", top: 24, right: 24 }}
       icon={<SpeedDialIcon icon={<SettingsIcon />} openIcon={<CloseIcon />} />}
-      direction="left"
+      direction={
+        isMobile && (window.orientation === 90 || window.orientation === -90)
+          ? "left"
+          : isMobile && (window.orientation !== 90 || window.orientation !== -90)
+          ? "down"
+          : "left"
+      }
     >
       {supportPWA ? (
         <SpeedDialAction
