@@ -104,14 +104,12 @@ const App = () => {
   function dropHandler(ev) {
     // Prevent default behavior (Prevent file from being opened)
     ev.preventDefault();
-
     document.getElementById("dropZone").style.display = "flex";
   }
 
   function dragOverHandler(ev) {
     // Prevent default behavior (Prevent file from being opened)
     ev.preventDefault();
-
     document.getElementById("dropZone").style.display = "flex";
   }
 

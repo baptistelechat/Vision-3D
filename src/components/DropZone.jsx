@@ -85,15 +85,18 @@ const DropZone = ({
       enqueueSnackbar,
     ]
   );
-  const { getRootProps, getInputProps, isDragActive } =
-    useDropzone({ onDrop, noClick: true, noKeyboard: true });
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    noClick: true,
+    noKeyboard: true,
+  });
 
   return (
     <div
       {...getRootProps()}
       id="dropZone"
       style={{
-        display: "none",
+        display: isDragActive ? "flex" : "none",
         justifyContent: "center",
         alignItems: "center",
         backgroundColor: isDragActive
