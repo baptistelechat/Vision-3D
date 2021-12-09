@@ -61,8 +61,8 @@ https://create-react-app-ifcjs.vercel.app/`;
     if (navigator.share) {
       navigator
         .share({
-          title: "IFC",
-          text: `Visitez IFC ! Un visionneuse IFC en ligne
+          title: "Vision",
+          text: `Visitez Vision ! Un visionneuse IFC en ligne
 
 Découvrez également d'autres fonctionnalités ...
 

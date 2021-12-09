@@ -10,6 +10,9 @@ import { Helmet } from "react-helmet";
 ReactDOM.render(
   <React.StrictMode>
     <Helmet>
+      <title>
+        Vision
+      </title>
       <script
         type="text/javascript"
         src="https://js.live.net/v7.2/OneDrive.js"

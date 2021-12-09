@@ -2,6 +2,9 @@
 import React, { useEffect, useRef, useState } from "react";
 // MATERIAL UI
 import Slide from "@mui/material/Slide";
+import Typography from "@mui/material/Typography";
+// COLORS
+import { blue } from "@mui/material/colors";
 // THREE.js
 import THREE from "./utils/three/three";
 import { IFCLoader } from "web-ifc-three/IFCLoader";
@@ -125,6 +128,42 @@ const App = () => {
       <Toaster position="top-left" reverseOrder={true} />
       <Settings />
       <LoadFile IFCview={IFCview} loaderRef={loaderRef} />
+      <div
+        style={{
+          position: "absolute",
+          top: 24,
+          left: 24,
+          display: "inline-flex",
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "center",
+          background: "rgb(227,242,253,0.5)", // Make sure this color has an opacity of less than 1
+          backdropFilter: "blur(4px)", // This be the blur
+          borderRadius: "8px",
+          padding: "8px",
+        }}
+      >
+        <img
+          src="../assets/icon/house.svg"
+          alt="Vision"
+          style={{
+            height: "64px",
+            width: "64px",
+            marginRight: "16px",
+          }}
+        />
+        <Typography
+          variant="h5"
+          sx={{
+            color: blue[800],
+            fontWeight: "bold",
+            fontSize: "1.75rem",
+            marginRight: "8px",
+          }}
+        >
+          Vision
+        </Typography>
+      </div>
       <canvas
         id="three-canvas"
         onDrop={(event) => dropHandler(event)}
