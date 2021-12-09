@@ -13,6 +13,10 @@ const Progress = ({
   percentProgress,
   randomLottieFile,
 }) => {
+  const isMobile =
+    "ontouchstart" in document.documentElement &&
+    navigator.userAgent.match(/Mobi/);
+
   const defaultOptions = {
     loop: true,
     autoplay: true,
@@ -29,22 +33,79 @@ const Progress = ({
       sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
       open={openProgress}
     >
-      <Stack
-        direction="column"
-        justifyContent="center"
-        alignItems="center"
-        spacing={0}
-      >
-        <Lottie options={defaultOptions} height={400} width={400} />
-        <Typography
-          variant="h4"
-          sx={{
-            fontWeight: "bold",
-          }}
+      {isMobile && (window.orientation === 90 || window.orientation === -90) ? (
+        <Stack
+          direction={"row"}
+          justifyContent="center"
+          alignItems="center"
+          spacing={0}
         >
-          {percentProgress}
-        </Typography>
-      </Stack>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              height: "50%",
+              width: "50%",
+            }}
+          >
+            <Lottie options={defaultOptions} height={window.innerHeight-25} width={window.innerHeight-25} />
+          </div>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              height: "50%",
+              width: "50%",
+            }}
+          >
+            <Typography
+              variant="h4"
+              sx={{
+                fontWeight: "bold",
+              }}
+            >
+              {percentProgress}
+            </Typography>
+          </div>
+        </Stack>
+      ) : isMobile &&
+        (window.orientation !== 90 || window.orientation !== -90) ? (
+        <Stack
+          direction={"column"}
+          justifyContent="center"
+          alignItems="center"
+          spacing={0}
+        >
+          <Lottie options={defaultOptions} height={window.innerWidth-25} width={window.innerWidth-25} />
+          <Typography
+            variant="h4"
+            sx={{
+              fontWeight: "bold",
+            }}
+          >
+            {percentProgress}
+          </Typography>
+        </Stack>
+      ) : (
+        <Stack
+          direction={"column"}
+          justifyContent="center"
+          alignItems="center"
+          spacing={0}
+        >
+          <Lottie options={defaultOptions} height={450} width={450} />
+          <Typography
+            variant="h4"
+            sx={{
+              fontWeight: "bold",
+            }}
+          >
+            {percentProgress}
+          </Typography>
+        </Stack>
+      )}
     </Backdrop>
   );
 };

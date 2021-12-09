@@ -8,12 +8,14 @@ import { useSnackbar } from "notistack";
 import SpeedDial from "@mui/material/SpeedDial";
 import SpeedDialIcon from "@mui/material/SpeedDialIcon";
 import SpeedDialAction from "@mui/material/SpeedDialAction";
+import Fab from "@mui/material/Fab";
 // COLORS
 import { blueGrey, blue } from "@mui/material/colors";
 // MATERIAL UI ICON
 import CloudIcon from "@mui/icons-material/Cloud";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import AttachmentIcon from "@mui/icons-material/Attachment";
+import AddIcon from "@mui/icons-material/Add";
 //FONT AWESOME
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -207,9 +209,6 @@ const LoadFile = ({ IFCview, loaderRef }) => {
             }
           );
           await setOpenProgress(false);
-          const isMobile =
-            "ontouchstart" in document.documentElement &&
-            navigator.userAgent.match(/Mobi/);
           if (!isMobile) {
             document.getElementById("dropZone").style.display = "none";
           }
@@ -247,6 +246,49 @@ const LoadFile = ({ IFCview, loaderRef }) => {
             component="span"
             {...props}
           ></SpeedDialAction>
+        </label>
+      </React.Fragment>
+    );
+  };
+
+  const UploadLocalFileOnMobile = (props) => {
+    return (
+      <React.Fragment>
+        <input
+          accept=".ifc"
+          style={{ display: "none" }}
+          id="local-button-file-mobile"
+          type="file"
+          onChange={(event) =>
+            openLocalFile(
+              event,
+              randomLottie,
+              resetView,
+              IFCview,
+              loaderRef,
+              loadingFileProgress,
+              setOpenProgress,
+              setPercentProgress,
+              enqueueSnackbar
+            )
+          }
+        />
+        <label htmlFor="local-button-file-mobile">
+          <Fab
+            color="primary"
+            disableFocusRipple={true}
+            sx={{
+              position: "absolute",
+              bottom: 24,
+              right: 24,
+              // backgroundColor: blue[00],
+              color: "white",
+            }}
+            component="span"
+            {...props}
+          >
+            <AddIcon />
+          </Fab>
         </label>
       </React.Fragment>
     );
@@ -338,75 +380,39 @@ const LoadFile = ({ IFCview, loaderRef }) => {
         percentProgress={percentProgress}
         randomLottieFile={randomLottieFile}
       />
-      <DropZoneDialog
-        openDropZone={openDropZone}
-        setOpenDropZone={setOpenDropZone}
-        randomLottie={randomLottie}
-        resetView={resetView}
-        IFCview={IFCview}
-        loaderRef={loaderRef}
-        loadingFileProgress={loadingFileProgress}
-        setOpenProgress={setOpenProgress}
-        setPercentProgress={setPercentProgress}
-        enqueueSnackbar={enqueueSnackbar}
-      />
-      {isMobile ? null : (
-        <DropZone
-          randomLottie={randomLottie}
-          resetView={resetView}
-          IFCview={IFCview}
-          loaderRef={loaderRef}
-          loadingFileProgress={loadingFileProgress}
-          setOpenProgress={setOpenProgress}
-          setPercentProgress={setPercentProgress}
-          enqueueSnackbar={enqueueSnackbar}
-        />
-      )}
-      <SpeedDial
-        ariaLabel="SpeedDial"
-        sx={{ position: "absolute", bottom: 24, right: 24 }}
-        icon={<SpeedDialIcon />}
-        direction={
-          isMobile && (window.orientation === 90 || window.orientation === -90)
-            ? "left"
-            : isMobile && (window.orientation !== 90 || window.orientation !== -90)
-            ? "up"
-            : "up"
-        }
-      >
-        <UploadLocalFileSpeedDialAction
-          FabProps={{
-            size: "large",
-            style: {
-              fontSize: "1.5em",
-              backgroundColor: blue[50],
-            },
-          }}
-        />
-        {!isMobile ? (
-          <SpeedDialAction
-            key="DropZone"
-            icon={
-              <AttachmentIcon
-                sx={{ fontSize: 30, color: blue[800] }}
-                onClick={() => setOpenDropZone(true)}
-              />
-            }
-            tooltipTitle="DropZone"
-            FabProps={{
-              size: "large",
-              style: {
-                fontSize: "1.5em",
-                backgroundColor: blue[50],
-              },
-              disabled: false,
-            }}
+      {isMobile ? (
+        <UploadLocalFileOnMobile />
+      ) : (
+        <div>
+          <DropZoneDialog
+            openDropZone={openDropZone}
+            setOpenDropZone={setOpenDropZone}
+            randomLottie={randomLottie}
+            resetView={resetView}
+            IFCview={IFCview}
+            loaderRef={loaderRef}
+            loadingFileProgress={loadingFileProgress}
+            setOpenProgress={setOpenProgress}
+            setPercentProgress={setPercentProgress}
+            enqueueSnackbar={enqueueSnackbar}
           />
-        ) : null}
-        )}
-        {actions.map((action) =>
-          action.name === "Google Drive" ? (
-            <UploadGDriveFileSpeedDialAction
+          <DropZone
+            randomLottie={randomLottie}
+            resetView={resetView}
+            IFCview={IFCview}
+            loaderRef={loaderRef}
+            loadingFileProgress={loadingFileProgress}
+            setOpenProgress={setOpenProgress}
+            setPercentProgress={setPercentProgress}
+            enqueueSnackbar={enqueueSnackbar}
+          />
+          <SpeedDial
+            ariaLabel="SpeedDial"
+            sx={{ position: "absolute", bottom: 24, right: 24 }}
+            icon={<SpeedDialIcon />}
+            direction={"up"}
+          >
+            <UploadLocalFileSpeedDialAction
               FabProps={{
                 size: "large",
                 style: {
@@ -415,23 +421,56 @@ const LoadFile = ({ IFCview, loaderRef }) => {
                 },
               }}
             />
-          ) : (
             <SpeedDialAction
-              key={action.name}
-              icon={action.icon}
-              tooltipTitle={action.name}
+              key="DropZone"
+              icon={
+                <AttachmentIcon
+                  sx={{ fontSize: 30, color: blue[800] }}
+                  onClick={() => setOpenDropZone(true)}
+                />
+              }
+              tooltipTitle="DropZone"
               FabProps={{
                 size: "large",
                 style: {
                   fontSize: "1.5em",
-                  backgroundColor: action.disabled ? blueGrey[50] : blue[50],
+                  backgroundColor: blue[50],
                 },
-                disabled: action.disabled,
+                disabled: false,
               }}
             />
-          )
-        )}
-      </SpeedDial>
+            {actions.map((action) =>
+              action.name === "Google Drive" ? (
+                <UploadGDriveFileSpeedDialAction
+                  FabProps={{
+                    size: "large",
+                    style: {
+                      fontSize: "1.5em",
+                      backgroundColor: blue[50],
+                    },
+                  }}
+                />
+              ) : (
+                <SpeedDialAction
+                  key={action.name}
+                  icon={action.icon}
+                  tooltipTitle={action.name}
+                  FabProps={{
+                    size: "large",
+                    style: {
+                      fontSize: "1.5em",
+                      backgroundColor: action.disabled
+                        ? blueGrey[50]
+                        : blue[50],
+                    },
+                    disabled: action.disabled,
+                  }}
+                />
+              )
+            )}
+          </SpeedDial>
+        </div>
+      )}
     </div>
   );
 };

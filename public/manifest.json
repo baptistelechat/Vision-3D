@@ -1,5 +1,5 @@
 {
-  "short_name": "React App",
+  "short_name": "Visionneuse IFC.js",
   "name": "Create React App Sample",
   "icons": [
     {
@@ -20,6 +20,7 @@
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "theme_color": "#1976d2",
+  "background_color": "#1976d2",
+  "categories": ["utilities", "productivity"]
 }

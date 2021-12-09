@@ -18,33 +18,15 @@ const App = () => {
   const loaderRef = useRef();
   const [IFCview, setIFCview] = useState(null);
 
-  const [width, setWidth] = useState(window.innerWidth);
-  const [height, setHeight] = useState(window.innerHeight);
-
   //Creates the Three.js scene
   useEffect(() => {
-    // Listen for orientation changes
-    window.addEventListener(
-      "orientationchange",
-      function () {
-        if (window.orientation === 90 || window.orientation === -90) {
-          // Announce the new orientation number
-          setWidth(window.innerHeight + 100);
-          setHeight(window.innerWidth + 100);
-        } else {
-          // Announce the new orientation number
-          setWidth(window.innerHeight + 100);
-          setHeight(window.innerWidth + 100);
-        }
-      },
-      false
-    );
     // Listen for window resize
     window.addEventListener(
       "resize",
       function () {
-        setWidth(window.innerWidth);
-        setHeight(window.innerHeight);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
       },
       false
     );
@@ -60,14 +42,14 @@ const App = () => {
       USE_FAST_BOOLS: false,
     });
 
-    // //Object to store the size of the viewport
-    // const size = {
-    //   width: width,
-    //   height: height,
-    // };
+    //Object to store the size of the viewport
+    const size = {
+      width: window.innerWidth,
+      height: window.innerHeight,
+    };
 
     //Creates the camera (point of view of the user)
-    const aspect = width / height;
+    const aspect = size.width / size.height;
     const camera = new THREE.PerspectiveCamera(75, aspect);
     camera.position.z = 15;
     camera.position.y = 13;
@@ -92,7 +74,7 @@ const App = () => {
       alpha: true,
     });
 
-    renderer.setSize(width, height);
+    renderer.setSize(size.width, size.height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
     //Creates grids and axes in the scene
@@ -117,7 +99,7 @@ const App = () => {
     };
 
     animate();
-  }, [height, width]);
+  }, []);
 
   function dropHandler(ev) {
     // Prevent default behavior (Prevent file from being opened)
