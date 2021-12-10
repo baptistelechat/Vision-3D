@@ -20,21 +20,28 @@ import { blueGrey, blue } from "@mui/material/colors";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 
 const Settings = () => {
-  const [supportPWA, setSupportPWA] = useState(false);
-  const [promptInstall, setPromptInstall] = useState(null);
-  const [orientation, setOrientation] = useState(
-    window.orientation === 90 || window.orientation === -90 ? "left" : "down"
-  );
-  const { enqueueSnackbar } = useSnackbar();
-
   const isMobile =
     "ontouchstart" in document.documentElement &&
     navigator.userAgent.match(/Mobi/);
+  const [supportPWA, setSupportPWA] = useState(false);
+  const [promptInstall, setPromptInstall] = useState(null);
+  const [orientation, setOrientation] = useState(
+    isMobile && (window.orientation === 90 || window.orientation === -90)
+      ? "left"
+      : isMobile && (window.orientation !== 90 || window.orientation !== -90)
+      ? "down"
+      : "left"
+  );
+  const { enqueueSnackbar } = useSnackbar();
 
   window.addEventListener("resize", () => {
-    console.log(window.orientation);
+    console.log();
     setOrientation(
-      window.orientation === 90 || window.orientation === -90 ? "left" : "down"
+      isMobile && (window.orientation === 90 || window.orientation === -90)
+        ? "left"
+        : isMobile && (window.orientation !== 90 || window.orientation !== -90)
+        ? "down"
+        : "left"
     );
   });
 
