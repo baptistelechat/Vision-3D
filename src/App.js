@@ -21,6 +21,10 @@ const App = () => {
   const loaderRef = useRef();
   const [IFCview, setIFCview] = useState(null);
 
+  const isMobile =
+    "ontouchstart" in document.documentElement &&
+    navigator.userAgent.match(/Mobi/);
+
   //Creates the Three.js scene
   useEffect(() => {
     // Listen for window resize
@@ -125,7 +129,7 @@ const App = () => {
       }}
       TransitionComponent={Slide}
     >
-      <Toaster position="top-left" reverseOrder={true} />
+      <Toaster position="bottom-left" reverseOrder={true} />
       <Settings />
       <LoadFile IFCview={IFCview} loaderRef={loaderRef} />
       <div
@@ -149,20 +153,22 @@ const App = () => {
           style={{
             height: "64px",
             width: "64px",
-            marginRight: "16px",
           }}
         />
-        <Typography
-          variant="h5"
-          sx={{
-            color: blue[800],
-            fontWeight: "bold",
-            fontSize: "1.75rem",
-            marginRight: "8px",
-          }}
-        >
-          Vision
-        </Typography>
+        {isMobile ? null : (
+          <Typography
+            variant="h5"
+            sx={{
+              color: blue[800],
+              fontWeight: "bold",
+              fontSize: "1.75rem",
+              marginLeft: "16px",
+              marginRight: "8px",
+            }}
+          >
+            Vision
+          </Typography>
+        )}
       </div>
       <canvas
         id="three-canvas"

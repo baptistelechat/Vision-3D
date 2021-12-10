@@ -1,7 +1,17 @@
 {
-  "name": "create-react-app-ifcjs",
+  "name": "vision-3d",
+  "description": "An online IFC viewer for BIM models",
   "version": "0.1.0",
-  "private": true,
+  "author": "Baptiste LECHAT / Matthieu LECHAT",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/baptistelechat/Vision-3D"
+  },
+  "bugs": {
+    "url": "https://github.com/baptistelechat/Vision-3D/issues"
+  },
+  "homepage": "https://vision-3d.vercel.app/",
   "dependencies": {
     "@azure/msal-browser": "^2.19.0",
     "@azure/msal-react": "^1.1.1",

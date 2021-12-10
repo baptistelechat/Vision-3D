@@ -22,11 +22,21 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 const Settings = () => {
   const [supportPWA, setSupportPWA] = useState(false);
   const [promptInstall, setPromptInstall] = useState(null);
+  const [orientation, setOrientation] = useState(
+    window.orientation === 90 || window.orientation === -90 ? "left" : "down"
+  );
   const { enqueueSnackbar } = useSnackbar();
 
   const isMobile =
     "ontouchstart" in document.documentElement &&
     navigator.userAgent.match(/Mobi/);
+
+  window.addEventListener("resize", () => {
+    console.log(window.orientation);
+    setOrientation(
+      window.orientation === 90 || window.orientation === -90 ? "left" : "down"
+    );
+  });
 
   useEffect(() => {
     const handler = (e) => {
@@ -62,12 +72,12 @@ https://create-react-app-ifcjs.vercel.app/`;
       navigator
         .share({
           title: "Vision",
-          text: `Visitez Vision ! Un visionneuse IFC en ligne
+          text: `Visitez Vision ! Une visionneuse IFC en ligne pour des modèles BIM
 
 Découvrez également d'autres fonctionnalités ...
 
 Application créée par Baptiste LECHAT et Matthieu LECHAT`,
-          url: "https://create-react-app-ifcjs.vercel.app/",
+          url: "https://vision-3d.vercel.app/",
         })
         .then(() => console.log("Successful share"))
         .catch((error) => console.log("Error sharing", error));
@@ -128,13 +138,7 @@ Application créée par Baptiste LECHAT et Matthieu LECHAT`,
       ariaLabel="SpeedDial"
       sx={{ position: "absolute", top: 24, right: 24 }}
       icon={<SpeedDialIcon icon={<SettingsIcon />} openIcon={<CloseIcon />} />}
-      direction={
-        isMobile && (window.orientation === 90 || window.orientation === -90)
-          ? "left"
-          : isMobile && (window.orientation !== 90 || window.orientation !== -90)
-          ? "down"
-          : "left"
-      }
+      direction={orientation}
     >
       {supportPWA ? (
         <SpeedDialAction

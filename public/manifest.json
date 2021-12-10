@@ -1,6 +1,7 @@
 {
   "short_name": "Vision",
-  "name": "Une visionneuse IFC en ligne",
+  "name": "Vision",
+  "description": "Une visionneuse IFC en ligne pour des modèles BIM",
   "icons": [
     {
       "src": "assets/icon/house.svg",
@@ -8,17 +9,18 @@
       "type": "image/x-icon"
     },
     {
-      "src": "assets/icon/manifest-icon-192.maskable.png",
+      "src": "assets/icon/manifest-icon-192.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "assets/icon/manifest-icon-512.maskable.png",
+      "src": "assets/icon/manifest-icon-512.png",
       "type": "image/png",
       "sizes": "512x512"
     }
   ],
   "start_url": ".",
+  "lang": "fr",
   "display": "standalone",
   "theme_color": "#1976d2",
   "background_color": "#1976d2",
