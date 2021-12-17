@@ -26,6 +26,7 @@ const DropZoneDialog = ({
   setPercentProgress,
   enqueueSnackbar,
 }) => {
+
   const onDrop = useCallback(
     (acceptedFiles) => {
       if (acceptedFiles.length > 1) {
@@ -91,11 +92,14 @@ const DropZoneDialog = ({
       setOpenProgress,
       setPercentProgress,
       enqueueSnackbar,
-      setOpenDropZone
+      setOpenDropZone,
     ]
   );
-  const { getRootProps, getInputProps, isDragActive } =
-    useDropzone({ onDrop, noClick: true, noKeyboard: true });
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    noClick: true,
+    noKeyboard: true,
+  });
 
   const handleClose = () => {
     setOpenDropZone(false);

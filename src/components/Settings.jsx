@@ -4,6 +4,8 @@ import React, { useState, useEffect } from "react";
 import SpeedDial from "@mui/material/SpeedDial";
 import SpeedDialIcon from "@mui/material/SpeedDialIcon";
 import SpeedDialAction from "@mui/material/SpeedDialAction";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { useTheme } from "@mui/material/styles";
 // NOTISTACK
 import { useSnackbar } from "notistack";
 // MATERIAL UI ICON
@@ -18,8 +20,13 @@ import EmailIcon from "@mui/icons-material/Email";
 import { blueGrey, blue } from "@mui/material/colors";
 // OTHER
 import { CopyToClipboard } from "react-copy-to-clipboard";
+//COMPONENTS
+import Profile from "./Profile/Profile.jsx";
 
 const Settings = () => {
+  const theme = useTheme();
+  const isSmallDevice = useMediaQuery(theme.breakpoints.down("sm"));
+
   const isMobile =
     "ontouchstart" in document.documentElement &&
     navigator.userAgent.match(/Mobi/);
@@ -28,10 +35,13 @@ const Settings = () => {
   const [orientation, setOrientation] = useState(
     isMobile && (window.orientation === 90 || window.orientation === -90)
       ? "left"
-      : isMobile && (window.orientation !== 90 || window.orientation !== -90)
+      : (isMobile &&
+          (window.orientation !== 90 || window.orientation !== -90)) ||
+        isSmallDevice
       ? "down"
       : "left"
   );
+  const [openProfile, setOpenProfile] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
 
   window.addEventListener("resize", () => {
@@ -39,7 +49,9 @@ const Settings = () => {
     setOrientation(
       isMobile && (window.orientation === 90 || window.orientation === -90)
         ? "left"
-        : isMobile && (window.orientation !== 90 || window.orientation !== -90)
+        : (isMobile &&
+            (window.orientation !== 90 || window.orientation !== -90)) ||
+          isSmallDevice
         ? "down"
         : "left"
     );
@@ -78,8 +90,8 @@ https://create-react-app-ifcjs.vercel.app/`;
     if (navigator.share) {
       navigator
         .share({
-          title: "Vision",
-          text: `Visitez Vision ! Une visionneuse IFC en ligne pour des modèles BIM
+          title: "Vision 3D",
+          text: `Visitez Vision 3D ! Une visionneuse IFC en ligne pour des modèles BIM
 
 Découvrez également d'autres fonctionnalités ...
 
@@ -103,9 +115,14 @@ Application créée par Baptiste LECHAT et Matthieu LECHAT`,
 
   const actions = [
     {
-      icon: <PersonIcon sx={{ color: blue[800] }} />,
+      icon: (
+        <PersonIcon
+          sx={{ color: blue[800] }}
+          onClick={() => setOpenProfile(true)}
+        />
+      ),
       name: "Mon profil",
-      disabled: true,
+      disabled: false,
     },
     {
       icon: (
@@ -141,42 +158,49 @@ Application créée par Baptiste LECHAT et Matthieu LECHAT`,
   ];
 
   return (
-    <SpeedDial
-      ariaLabel="SpeedDial"
-      sx={{ position: "absolute", top: 24, right: 24 }}
-      icon={<SpeedDialIcon icon={<SettingsIcon />} openIcon={<CloseIcon />} />}
-      direction={orientation}
-    >
-      {supportPWA ? (
-        <SpeedDialAction
-          key="Installer PWA"
-          icon={<AutoAwesomeIcon sx={{ color: blue[800] }} onClick={install} />}
-          tooltipTitle="Installer PWA"
-          FabProps={{
-            size: "large",
-            style: {
-              fontSize: "1.5em",
-              backgroundColor: blue[50],
-            },
-          }}
-        />
-      ) : null}
-      {actions.map((action) => (
-        <SpeedDialAction
-          key={action.name}
-          icon={action.icon}
-          tooltipTitle={action.name}
-          FabProps={{
-            size: "large",
-            style: {
-              fontSize: "1.5em",
-              backgroundColor: action.disabled ? blueGrey[50] : blue[50],
-            },
-            disabled: action.disabled,
-          }}
-        />
-      ))}
-    </SpeedDial>
+    <React.Fragment>
+      <Profile openProfile={openProfile} setOpenProfile={setOpenProfile} />
+      <SpeedDial
+        ariaLabel="SpeedDial"
+        sx={{ position: "absolute", top: 24, right: 24 }}
+        icon={
+          <SpeedDialIcon icon={<SettingsIcon />} openIcon={<CloseIcon />} />
+        }
+        direction={orientation}
+      >
+        {supportPWA ? (
+          <SpeedDialAction
+            key="Installer PWA"
+            icon={
+              <AutoAwesomeIcon sx={{ color: blue[800] }} onClick={install} />
+            }
+            tooltipTitle="Installer PWA"
+            FabProps={{
+              size: "large",
+              style: {
+                fontSize: "1.5em",
+                backgroundColor: blue[50],
+              },
+            }}
+          />
+        ) : null}
+        {actions.map((action) => (
+          <SpeedDialAction
+            key={action.name}
+            icon={action.icon}
+            tooltipTitle={action.name}
+            FabProps={{
+              size: "large",
+              style: {
+                fontSize: "1.5em",
+                backgroundColor: action.disabled ? blueGrey[50] : blue[50],
+              },
+              disabled: action.disabled,
+            }}
+          />
+        ))}
+      </SpeedDial>
+    </React.Fragment>
   );
 };
 
