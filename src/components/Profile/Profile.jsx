@@ -18,11 +18,27 @@ import SecurityIcon from "@mui/icons-material/Security";
 import License from "./License";
 import RGPD from "./RGPD";
 import CGU from "./CGU";
+// OTHER
+import { useLocation, useNavigate } from "react-router-dom";
 
 const Profile = ({ openProfile, setOpenProfile }) => {
-  const [openCGU, setOpenCGU] = useState(false);
-  const [openRGPD, setOpenRGPD] = useState(false);
-  const [openLicense, setOpenLicense] = useState(false);
+  const { hash } = useLocation();
+  const navigate = useNavigate();
+
+  const [openCGU, setOpenCGU] = useState(hash === "#cgu" ? true : false);
+  const [openRGPD, setOpenRGPD] = useState(
+    hash === "#rgpd" || hash === "#security" ? true : false
+  );
+  const [openLicense, setOpenLicense] = useState(
+    hash === "#license" ? true : false
+  );
+
+  window.onhashchange = () => {
+    setOpenCGU(hash === "#cgu" ? true : false);
+    setOpenLicense(hash === "#rgpd" || hash === "#security" ? true : false);
+    setOpenRGPD(hash === "#license" ? true : false);
+  };
+
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -32,9 +48,21 @@ const Profile = ({ openProfile, setOpenProfile }) => {
 
   return (
     <React.Fragment>
-      <CGU openCGU={openCGU} setOpenCGU={setOpenCGU} />
-      <RGPD openRGPD={openRGPD} setOpenRGPD={setOpenRGPD} />
-      <License openLicense={openLicense} setOpenLicense={setOpenLicense} />
+      <CGU
+        openCGU={openCGU}
+        setOpenCGU={setOpenCGU}
+        openProfile={openProfile}
+      />
+      <RGPD
+        openRGPD={openRGPD}
+        setOpenRGPD={setOpenRGPD}
+        openProfile={openProfile}
+      />
+      <License
+        openLicense={openLicense}
+        setOpenLicense={setOpenLicense}
+        openProfile={openProfile}
+      />
       <Dialog fullScreen={fullScreen} onClose={handleClose} open={openProfile}>
         <DialogTitle>
           <h3 style={{ marginTop: "8px", marginBottom: "8px" }}>Mon Profil</h3>
@@ -60,7 +88,10 @@ const Profile = ({ openProfile, setOpenProfile }) => {
             <Fab
               variant="extended"
               color="primary"
-              onClick={() => setOpenCGU(true)}
+              onClick={() => {
+                setOpenCGU(true);
+                navigate("#cgu");
+              }}
             >
               <SubjectIcon sx={{ mr: 1 }} />
               Conditions générales d'utilisation (CGU)
@@ -68,7 +99,10 @@ const Profile = ({ openProfile, setOpenProfile }) => {
             <Fab
               variant="extended"
               color="primary"
-              onClick={() => setOpenRGPD(true)}
+              onClick={() => {
+                setOpenRGPD(true);
+                navigate("#rgpd");
+              }}
             >
               <SecurityIcon sx={{ mr: 1 }} />
               Politique de confidentialité (RGPD)
@@ -76,7 +110,10 @@ const Profile = ({ openProfile, setOpenProfile }) => {
             <Fab
               variant="extended"
               color="primary"
-              onClick={() => setOpenLicense(true)}
+              onClick={() => {
+                setOpenLicense(true);
+                navigate("#license");
+              }}
             >
               <CopyrightIcon sx={{ mr: 1 }} />
               Licence (MIT License)

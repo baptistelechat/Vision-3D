@@ -11,20 +11,24 @@ import { useTheme } from "@mui/material/styles";
 // MATERIAL UI ICON
 import CloseIcon from "@mui/icons-material/Close";
 import SubjectIcon from "@mui/icons-material/Subject";
+// OTHER
+import { useNavigate } from "react-router-dom";
 
-const CGU = ({ openCGU, setOpenCGU }) => {
+const CGU = ({ openCGU, setOpenCGU, openProfile }) => {
+  const navigate = useNavigate();
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   const handleClose = () => {
     setOpenCGU(false);
+    navigate("");
   };
   return (
     <Dialog
       fullScreen={fullScreen}
       onClose={handleClose}
       open={openCGU}
-      hideBackdrop={true}
+      hideBackdrop={openProfile}
     >
       <DialogTitle>
         <Stack
@@ -46,7 +50,9 @@ const CGU = ({ openCGU, setOpenCGU }) => {
       </DialogTitle>
       <DialogContent sx={{ mt: "16px", mb: "16px" }}>
         <DialogContentText id="alert-dialog-description" sx={{ mb: "32px" }}>
-          <h4>Conditions générales d'utilisation du site Internet : VISION 3D</h4>
+          <h4>
+            Conditions générales d'utilisation du site Internet : VISION 3D
+          </h4>
           <br></br>
           <p>
             Le présent document a pour objet de définir les modalités et

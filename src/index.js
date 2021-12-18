@@ -6,13 +6,12 @@ import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 import reportWebVitals from "./reportWebVitals";
 // OTHER
 import { Helmet } from "react-helmet";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 ReactDOM.render(
   <React.StrictMode>
     <Helmet>
-      <title>
-        Vision
-      </title>
+      <title>Vision</title>
       <script
         type="text/javascript"
         src="https://js.live.net/v7.2/OneDrive.js"
@@ -25,7 +24,9 @@ ReactDOM.render(
         data-app-key={process.env.REACT_APP_DROPBOX_APP_KEY}
       ></script>
     </Helmet>
-    <App />
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
   </React.StrictMode>,
   document.getElementById("root")
 );

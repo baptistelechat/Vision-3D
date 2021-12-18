@@ -13,8 +13,11 @@ import { useTheme } from "@mui/material/styles";
 import CloseIcon from "@mui/icons-material/Close";
 import TranslateIcon from "@mui/icons-material/Translate";
 import CopyrightIcon from "@mui/icons-material/Copyright";
+// OTHER
+import { useNavigate } from "react-router-dom";
 
-const License = ({ openLicense, setOpenLicense }) => {
+const License = ({ openLicense, setOpenLicense, openProfile }) => {
+  const navigate = useNavigate();
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const [translate, setTranslate] = useState(true);
@@ -27,13 +30,14 @@ const License = ({ openLicense, setOpenLicense }) => {
   };
   const handleClose = () => {
     setOpenLicense(false);
+    navigate("");
   };
   return (
     <Dialog
       fullScreen={fullScreen}
       onClose={handleClose}
       open={openLicense}
-      hideBackdrop={true}
+      hideBackdrop={openProfile}
     >
       <DialogTitle>
         <Stack

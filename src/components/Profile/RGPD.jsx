@@ -12,16 +12,20 @@ import { useTheme } from "@mui/material/styles";
 // MATERIAL UI ICON
 import CloseIcon from "@mui/icons-material/Close";
 import SecurityIcon from "@mui/icons-material/Security";
+// OTHER
+import { useNavigate } from "react-router-dom";
 // COMPONENTS
 import RGPDrequest from "./RGPDrequest";
 
-const RGPD = ({ openRGPD, setOpenRGPD }) => {
+const RGPD = ({ openRGPD, setOpenRGPD, openProfile }) => {
+  const navigate = useNavigate();
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const [openRGPDrequest, setOpenRGPDrequest] = useState(false);
 
   const handleClose = () => {
     setOpenRGPD(false);
+    navigate("");
   };
 
   return (
@@ -34,7 +38,7 @@ const RGPD = ({ openRGPD, setOpenRGPD }) => {
         fullScreen={fullScreen}
         onClose={handleClose}
         open={openRGPD}
-        hideBackdrop={true}
+        hideBackdrop={openProfile}
       >
         <DialogTitle>
           <Stack

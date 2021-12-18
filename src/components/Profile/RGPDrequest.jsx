@@ -22,6 +22,7 @@ import ArticleIcon from "@mui/icons-material/Article";
 import SendIcon from "@mui/icons-material/Send";
 // OTHER
 import emailjs from "emailjs-com";
+import { useSnackbar } from "notistack";
 
 const RGPDrequest = ({ openRGPDrequest, setOpenRGPDrequest }) => {
   const date = new Date();
@@ -50,6 +51,8 @@ const RGPDrequest = ({ openRGPDrequest, setOpenRGPDrequest }) => {
   const [remove, setRemove] = useState(false);
   const { prenom, nom, email } = requestData;
 
+  const { enqueueSnackbar } = useSnackbar();
+
   const handleTextFieldChange = (e) => {
     setRequestData({ ...requestData, [e.target.id]: e.target.value });
   };
@@ -66,9 +69,18 @@ const RGPDrequest = ({ openRGPDrequest, setOpenRGPDrequest }) => {
       .then(
         (result) => {
           console.log(result.text);
+          enqueueSnackbar(
+            `Demande envoyé avec succès. Un email vous a été envoyé. Nous vous répondrons dans les plus brefs délais.`,
+            {
+              variant: "success",
+            }
+          );
+          setRequestData(data);
         },
         (error) => {
           console.log(error.text);
+          setRequestData(data);
+
         }
       );
   };
