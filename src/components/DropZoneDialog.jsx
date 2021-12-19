@@ -13,6 +13,9 @@ import AttachmentIcon from "@mui/icons-material/Attachment";
 import CloseIcon from "@mui/icons-material/Close";
 // REACT DROPZONE
 import { useDropzone } from "react-dropzone";
+// REDUX
+import { useDispatch } from "react-redux";
+import { addModel } from "../utils/redux/ifcModels";
 
 const DropZoneDialog = ({
   openDropZone,
@@ -26,6 +29,7 @@ const DropZoneDialog = ({
   setPercentProgress,
   enqueueSnackbar,
 }) => {
+  const dispatch = useDispatch();
 
   const onDrop = useCallback(
     (acceptedFiles) => {
@@ -61,6 +65,7 @@ const DropZoneDialog = ({
             const object = await loaderRef.current.loadAsync(ifcURL);
             object.name = "IFCModel";
             IFCview.add(object);
+            dispatch(addModel(object));
             setOpenProgress(false);
             setPercentProgress("Chargement ...");
             await enqueueSnackbar(
@@ -93,6 +98,7 @@ const DropZoneDialog = ({
       setPercentProgress,
       enqueueSnackbar,
       setOpenDropZone,
+      dispatch,
     ]
   );
   const { getRootProps, getInputProps, isDragActive } = useDropzone({

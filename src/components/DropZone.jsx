@@ -8,6 +8,9 @@ import AttachmentIcon from "@mui/icons-material/Attachment";
 import { blueGrey } from "@mui/material/colors";
 // REACT DROPZONE
 import { useDropzone } from "react-dropzone";
+// REDUX
+import { useDispatch } from "react-redux";
+import { addModel } from "../utils/redux/ifcModels";
 
 const DropZone = ({
   randomLottie,
@@ -19,6 +22,8 @@ const DropZone = ({
   setPercentProgress,
   enqueueSnackbar,
 }) => {
+  const dispatch = useDispatch();
+
   const onDrop = useCallback(
     (acceptedFiles) => {
       if (acceptedFiles.length > 1) {
@@ -53,6 +58,7 @@ const DropZone = ({
             const object = await loaderRef.current.loadAsync(ifcURL);
             object.name = "IFCModel";
             IFCview.add(object);
+            dispatch(addModel(object));
             setOpenProgress(false);
             setPercentProgress("Chargement ...");
             await enqueueSnackbar(
@@ -83,6 +89,7 @@ const DropZone = ({
       setOpenProgress,
       setPercentProgress,
       enqueueSnackbar,
+      dispatch,
     ]
   );
   const { getRootProps, getInputProps, isDragActive } = useDropzone({

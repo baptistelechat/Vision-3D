@@ -4,30 +4,38 @@ import "./index.css";
 import App from "./App";
 import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 import reportWebVitals from "./reportWebVitals";
+// UTILS
+import store from "./utils/redux/store";
 // OTHER
 import { Helmet } from "react-helmet";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
+import { Provider } from "react-redux";
 
 ReactDOM.render(
-  <React.StrictMode>
-    <Helmet>
-      <title>Vision</title>
-      <script
-        type="text/javascript"
-        src="https://js.live.net/v7.2/OneDrive.js"
-      />
-      <script type="text/javascript" src="https://apis.google.com/js/api.js" />
-      <script
-        type="text/javascript"
-        src="https://www.dropbox.com/static/api/2/dropins.js"
-        id="dropboxjs"
-        data-app-key={process.env.REACT_APP_DROPBOX_APP_KEY}
-      ></script>
-    </Helmet>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
-  </React.StrictMode>,
+  <Provider store={store}>
+    <React.StrictMode>
+      <Helmet>
+        <title>Vision</title>
+        <script
+          type="text/javascript"
+          src="https://js.live.net/v7.2/OneDrive.js"
+        />
+        <script
+          type="text/javascript"
+          src="https://apis.google.com/js/api.js"
+        />
+        <script
+          type="text/javascript"
+          src="https://www.dropbox.com/static/api/2/dropins.js"
+          id="dropboxjs"
+          data-app-key={process.env.REACT_APP_DROPBOX_APP_KEY}
+        ></script>
+      </Helmet>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </React.StrictMode>
+  </Provider>,
   document.getElementById("root")
 );
 

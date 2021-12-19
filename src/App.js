@@ -14,11 +14,21 @@ import Settings from "./components/Settings";
 // OTHER
 import { SnackbarProvider } from "notistack";
 import { Toaster } from "react-hot-toast";
+import {
+  acceleratedRaycast,
+  computeBoundsTree,
+  disposeBoundsTree,
+} from "three-mesh-bvh";
+// REDUX
+import { useSelector } from "react-redux";
 // STYLES
 import "./App.css";
 
 const App = () => {
+  const ifcModels = useSelector((state) => state.ifcModels.value);
+
   const loaderRef = useRef();
+  const cameraRef = useRef();
   const [IFCview, setIFCview] = useState(null);
 
   const isMobile =
@@ -32,8 +42,8 @@ const App = () => {
       "resize",
       function () {
         renderer.setSize(window.innerWidth, window.innerHeight);
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
+        cameraRef.current.aspect = window.innerWidth / window.innerHeight;
+        cameraRef.current.updateProjectionMatrix();
       },
       false
     );
@@ -49,6 +59,13 @@ const App = () => {
       USE_FAST_BOOLS: false,
     });
 
+    // Sets up optimized picking
+    loaderRef.current.ifcManager.setupThreeMeshBVH(
+      computeBoundsTree,
+      disposeBoundsTree,
+      acceleratedRaycast
+    );
+
     //Object to store the size of the viewport
     const size = {
       width: window.innerWidth,
@@ -57,10 +74,10 @@ const App = () => {
 
     //Creates the camera (point of view of the user)
     const aspect = size.width / size.height;
-    const camera = new THREE.PerspectiveCamera(75, aspect);
-    camera.position.z = 15;
-    camera.position.y = 13;
-    camera.position.x = 8;
+    cameraRef.current = new THREE.PerspectiveCamera(75, aspect);
+    cameraRef.current.position.z = 15;
+    cameraRef.current.position.y = 13;
+    cameraRef.current.position.x = 8;
 
     //Creates the lights of the scene
     const lightColor = 0xffffff;
@@ -94,19 +111,60 @@ const App = () => {
     scene.add(axes);
 
     //Creates the orbit controls (to navigate the scene)
-    const controls = new THREE.OrbitControls(camera, threeCanvas);
+    const controls = new THREE.OrbitControls(cameraRef.current, threeCanvas);
     controls.enableDamping = true;
     controls.target.set(-2, 0, 0);
 
     //Animation loop
     const animate = () => {
       controls.update();
-      renderer.render(scene, camera);
+      renderer.render(scene, cameraRef.current);
       requestAnimationFrame(animate);
     };
 
     animate();
   }, []);
+
+  //Raycaster
+  const raycaster = new THREE.Raycaster();
+  raycaster.firstHitOnly = true;
+  const mouse = new THREE.Vector2();
+
+  const cast = (event) => {
+    // Computes the position of the mouse on the screen
+    const bounds = document
+      .getElementById("three-canvas")
+      .getBoundingClientRect();
+
+    const x1 = event.clientX - bounds.left;
+    const x2 = bounds.right - bounds.left;
+    mouse.x = (x1 / x2) * 2 - 1;
+
+    const y1 = event.clientY - bounds.top;
+    const y2 = bounds.bottom - bounds.top;
+    mouse.y = -(y1 / y2) * 2 + 1;
+
+    // Places it on the camera pointing to the mouse
+    raycaster.setFromCamera(mouse, cameraRef.current);
+
+    // Casts a ray
+    return raycaster.intersectObjects(ifcModels);
+  };
+
+  const pick = (event) => {
+    const found = cast(event)[0];
+    if (found) {
+      const index = found.faceIndex;
+      const geometry = found.object.geometry;
+      const ifc = loaderRef.current.ifcManager;
+      const id = ifc.getExpressId(geometry, index);
+      console.log(id);
+    }
+  };
+
+  if (document.getElementById("three-canvas") !== null) {
+    document.getElementById("three-canvas").addEventListener("dblclick", pick);
+  }
 
   function dropHandler(ev) {
     // Prevent default behavior (Prevent file from being opened)

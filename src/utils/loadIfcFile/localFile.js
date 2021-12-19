@@ -7,7 +7,9 @@ const openLocalFile = async (
   loadingFileProgress,
   setOpenProgress,
   setPercentProgress,
-  enqueueSnackbar
+  enqueueSnackbar,
+  dispatch,
+  addModel
 ) => {
   await randomLottie();
   await setOpenProgress(true);
@@ -35,6 +37,7 @@ const openLocalFile = async (
       const object = await loaderRef.current.loadAsync(ifcURL);
       object.name = "IFCModel";
       IFCview.add(object);
+      dispatch(addModel(object));
       setOpenProgress(false);
       setPercentProgress("Chargement ...");
       enqueueSnackbar(

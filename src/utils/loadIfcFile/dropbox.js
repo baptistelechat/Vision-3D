@@ -7,7 +7,9 @@ const openDropboxPicker = async (
   loadingFileProgress,
   setOpenProgress,
   setPercentProgress,
-  enqueueSnackbar
+  enqueueSnackbar,
+  dispatch,
+  addModel
 ) => {
   const options = {
     // Required. Called when a user selects an item in the Chooser.
@@ -32,6 +34,7 @@ const openDropboxPicker = async (
         const object = await loaderRef.current.loadAsync(ifcUrl + "?dl=1");
         object.name = "IFCModel";
         IFCview.add(object);
+        dispatch(addModel(object));
         setOpenProgress(false);
         setPercentProgress("Chargement ...");
         enqueueSnackbar(

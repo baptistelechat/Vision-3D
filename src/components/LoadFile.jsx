@@ -27,13 +27,16 @@ import {
 import Progress from "./Progress";
 import DropZoneDialog from "./DropZoneDialog";
 import DropZone from "./DropZone";
-
 // UTILS
 import openLocalFile from "../utils/loadIfcFile/localFile";
 import openOneDrivePicker from "../utils/loadIfcFile/oneDrive";
 import openDropboxPicker from "../utils/loadIfcFile/dropbox";
+// REDUX
+import { useDispatch } from "react-redux";
+import { addModel, removeModel } from "../utils/redux/ifcModels";
 
 const LoadFile = ({ IFCview, loaderRef }) => {
+  const dispatch = useDispatch();
   const [openProgress, setOpenProgress] = useState(false);
   const [percentProgress, setPercentProgress] = useState("Chargement ...");
   const [randomLottieFile, setRandomLottieFile] = useState(1);
@@ -56,18 +59,22 @@ const LoadFile = ({ IFCview, loaderRef }) => {
     // for better memory management and performance
     if (selectedObject.geometry) {
       selectedObject.geometry.dispose();
+      dispatch(removeModel());
     }
     if (selectedObject.material) {
       if (selectedObject.material instanceof Array) {
         // for better memory management and performance
         selectedObject.material.forEach((material) => material.dispose());
+        dispatch(removeModel());
       } else {
         // for better memory management and performance
         selectedObject.material.dispose();
+        dispatch(removeModel());
       }
     }
     if (selectedObject.parent) {
       selectedObject.parent.remove(selectedObject);
+      dispatch(removeModel());
     }
     // the parent might be the scene or another Object3D, but it is sure to be removed this way
     return true;
@@ -187,6 +194,7 @@ const LoadFile = ({ IFCview, loaderRef }) => {
             const object = await loaderRef.current.loadAsync(ifcURL);
             object.name = "IFCModel";
             IFCview.add(object);
+            dispatch(addModel(object));
             setOpenProgress(false);
             setPercentProgress("Chargement ...");
 
@@ -235,7 +243,9 @@ const LoadFile = ({ IFCview, loaderRef }) => {
               loadingFileProgress,
               setOpenProgress,
               setPercentProgress,
-              enqueueSnackbar
+              enqueueSnackbar,
+              dispatch,
+              addModel
             )
           }
         />
@@ -336,7 +346,9 @@ const LoadFile = ({ IFCview, loaderRef }) => {
               loadingFileProgress,
               setOpenProgress,
               setPercentProgress,
-              enqueueSnackbar
+              enqueueSnackbar,
+              dispatch,
+              addModel
             )
           }
         />
@@ -362,7 +374,9 @@ const LoadFile = ({ IFCview, loaderRef }) => {
               loadingFileProgress,
               setOpenProgress,
               setPercentProgress,
-              enqueueSnackbar
+              enqueueSnackbar,
+              dispatch,
+              addModel
             )
           }
         />

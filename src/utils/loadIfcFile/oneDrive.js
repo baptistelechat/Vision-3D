@@ -6,7 +6,9 @@ const openOneDrivePicker = async (
   loadingFileProgress,
   setOpenProgress,
   setPercentProgress,
-  enqueueSnackbar
+  enqueueSnackbar,
+  dispatch,
+  addModel
 ) => {
   let odOptions = {
     clientId: process.env.REACT_APP_MS_GRAPH_CLIENT_ID,
@@ -35,6 +37,7 @@ const openOneDrivePicker = async (
         const object = await loaderRef.current.loadAsync(ifcURL);
         object.name = "IFCModel";
         IFCview.add(object);
+        dispatch(addModel(object));
         setOpenProgress(false);
         setPercentProgress("Chargement ...");
         enqueueSnackbar(
