@@ -32,11 +32,13 @@ import openLocalFile from "../utils/loadIfcFile/localFile";
 import openOneDrivePicker from "../utils/loadIfcFile/oneDrive";
 import openDropboxPicker from "../utils/loadIfcFile/dropbox";
 // REDUX
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addModel, removeModel } from "../utils/redux/ifcModels";
 
-const LoadFile = ({ IFCview, loaderRef }) => {
+const LoadFile = ({ IFCview, loaderRef, preselectMat, selectMat }) => {
   const dispatch = useDispatch();
+  const ifcModels = useSelector((state) => state.ifcModels.value);
+
   const [openProgress, setOpenProgress] = useState(false);
   const [percentProgress, setPercentProgress] = useState("Chargement ...");
   const [randomLottieFile, setRandomLottieFile] = useState(1);
@@ -54,6 +56,11 @@ const LoadFile = ({ IFCview, loaderRef }) => {
   };
 
   const resetView = () => {
+    if (ifcModels[0] !== undefined) {
+      loaderRef.current.ifcManager.removeSubset(ifcModels[0].mesh.modelID, IFCview, preselectMat);
+      loaderRef.current.ifcManager.removeSubset(ifcModels[0].mesh.modelID, IFCview, selectMat);
+      console.log("resetView");
+    }
     const selectedObject = IFCview.getObjectByName("IFCModel");
     if (!(selectedObject instanceof THREE.Object3D)) return false;
     // for better memory management and performance

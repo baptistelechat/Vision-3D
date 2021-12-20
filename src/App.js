@@ -162,8 +162,60 @@ const App = () => {
     }
   };
 
+  // Creates subset material
+  const preselectMat = new THREE.MeshLambertMaterial({
+    transparent: true,
+    opacity: 0.5,
+    color: 0x1565c0,
+    depthTest: true,
+  });
+
+  const selectMat = new THREE.MeshLambertMaterial({
+    transparent: true,
+    opacity: 1,
+    color: 0x1565c0,
+    depthTest: true,
+  });
+
+  // Reference to the previous selection
+  let preselectModel = { id: -1 };
+
+  const highlight = (event, material, model) => {
+    const found = cast(event)[0];
+    if (found) {
+      // Gets model ID
+      model.id = found.object.modelID;
+
+      // Gets Express ID
+      const index = found.faceIndex;
+      const geometry = found.object.geometry;
+      const ifc = loaderRef.current.ifcManager;
+      const id = ifc.getExpressId(geometry, index);
+
+      // Creates subset
+      loaderRef.current.ifcManager.createSubset({
+        modelID: model.id,
+        ids: [id],
+        material: material,
+        scene: IFCview,
+        removePrevious: true,
+      });
+    } else {
+      // Removes previous highlight
+      loaderRef.current.ifcManager.removeSubset(model.id, IFCview, material);
+    }
+  };
+
+  window.onmousemove = (event) =>
+    highlight(event, preselectMat, preselectModel);
+
+  const selectModel = { id: -1 };
+
   if (document.getElementById("three-canvas") !== null) {
-    document.getElementById("three-canvas").addEventListener("dblclick", pick);
+    document.getElementById("three-canvas").ondblclick = (event) => {
+      pick(event);
+      highlight(event, selectMat, selectModel);
+    };
   }
 
   function dropHandler(ev) {
@@ -189,7 +241,12 @@ const App = () => {
     >
       <Toaster position="bottom-left" reverseOrder={true} />
       <Settings />
-      <LoadFile IFCview={IFCview} loaderRef={loaderRef} />
+      <LoadFile
+        IFCview={IFCview}
+        loaderRef={loaderRef}
+        preselectMat={preselectMat}
+        selectMat={selectMat}
+      />
       <div
         style={{
           position: "absolute",
