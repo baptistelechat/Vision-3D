@@ -57,8 +57,16 @@ const LoadFile = ({ IFCview, loaderRef, preselectMat, selectMat }) => {
 
   const resetView = () => {
     if (ifcModels[0] !== undefined) {
-      loaderRef.current.ifcManager.removeSubset(ifcModels[0].mesh.modelID, IFCview, preselectMat);
-      loaderRef.current.ifcManager.removeSubset(ifcModels[0].mesh.modelID, IFCview, selectMat);
+      loaderRef.current.ifcManager.removeSubset(
+        ifcModels[0].mesh.modelID,
+        IFCview,
+        preselectMat
+      );
+      loaderRef.current.ifcManager.removeSubset(
+        ifcModels[0].mesh.modelID,
+        IFCview,
+        selectMat
+      );
       console.log("resetView");
     }
     const selectedObject = IFCview.getObjectByName("IFCModel");
@@ -286,7 +294,9 @@ const LoadFile = ({ IFCview, loaderRef, preselectMat, selectMat }) => {
               loadingFileProgress,
               setOpenProgress,
               setPercentProgress,
-              enqueueSnackbar
+              enqueueSnackbar,
+              dispatch,
+              addModel
             )
           }
         />

@@ -206,8 +206,14 @@ const App = () => {
     }
   };
 
-  window.onmousemove = (event) =>
-    highlight(event, preselectMat, preselectModel);
+  window.onmousemove = (event) => {
+    if (isMobile) {
+      pick(event);
+      highlight(event, selectMat, selectModel);
+    } else {
+      highlight(event, preselectMat, preselectModel);
+    }
+  };
 
   const selectModel = { id: -1 };
 
