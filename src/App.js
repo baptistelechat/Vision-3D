@@ -151,14 +151,24 @@ const App = () => {
     return raycaster.intersectObjects(ifcModels);
   };
 
-  const pick = (event) => {
+  const pick = async (event) => {
     const found = cast(event)[0];
     if (found) {
       const index = found.faceIndex;
       const geometry = found.object.geometry;
       const ifc = loaderRef.current.ifcManager;
       const id = ifc.getExpressId(geometry, index);
-      console.log(id);
+      const modelID = found.object.modelID;
+      const props = await ifc.getItemProperties(modelID, id);
+      console.log(props);
+      const type = await ifc.getTypeProperties(modelID, id);
+      console.log(type);
+      const material = await ifc.getMaterialsProperties(modelID, id);
+      console.log(material);
+      const sets = await ifc.getPropertySets(modelID, id);
+      console.log(sets);
+      const tree = await ifc.getSpatialStructure(modelID, id);
+      console.log(tree);
     }
   };
 
