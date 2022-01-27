@@ -16,7 +16,7 @@ import CopyrightIcon from "@mui/icons-material/Copyright";
 // OTHER
 import { useNavigate } from "react-router-dom";
 
-const License = ({ openLicense, setOpenLicense, openProfile }) => {
+const License = ({ openLicense, setOpenLicense, openConfidentiality }) => {
   const navigate = useNavigate();
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
@@ -37,7 +37,7 @@ const License = ({ openLicense, setOpenLicense, openProfile }) => {
       fullScreen={fullScreen}
       onClose={handleClose}
       open={openLicense}
-      hideBackdrop={openProfile}
+      hideBackdrop={openConfidentiality}
     >
       <DialogTitle>
         <Stack

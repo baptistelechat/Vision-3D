@@ -1,5 +1,5 @@
 // REACT
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useContext } from "react";
 // MATERIAL UI
 import Slide from "@mui/material/Slide";
 import Typography from "@mui/material/Typography";
@@ -11,6 +11,7 @@ import { IFCLoader } from "web-ifc-three/IFCLoader";
 // COMPONENTS
 import LoadFile from "./components/LoadFile.jsx";
 import Settings from "./components/Settings";
+import Authentication from "./components/Authentication/Authentication";
 // OTHER
 import { SnackbarProvider } from "notistack";
 import { Toaster } from "react-hot-toast";
@@ -23,6 +24,8 @@ import {
 import { useSelector } from "react-redux";
 // STYLES
 import "./App.css";
+// FIREBASE
+import { FirebaseContext } from "./utils/firebase/firebaseContext";
 
 const App = () => {
   const ifcModels = useSelector((state) => state.ifcModels.value);
@@ -30,6 +33,8 @@ const App = () => {
   const loaderRef = useRef();
   const cameraRef = useRef();
   const [IFCview, setIFCview] = useState(null);
+
+  const { currentUser } = useContext(FirebaseContext);
 
   const isMobile =
     "ontouchstart" in document.documentElement &&
@@ -173,19 +178,23 @@ const App = () => {
   };
 
   // Creates subset material
-  const preselectMat = new THREE.MeshLambertMaterial({
-    transparent: true,
-    opacity: 0.5,
-    color: 0x1565c0,
-    depthTest: true,
-  });
+  const preselectMat = currentUser
+    ? new THREE.MeshLambertMaterial({
+        transparent: true,
+        opacity: 0.5,
+        color: 0x1565c0,
+        depthTest: true,
+      })
+    : null;
 
-  const selectMat = new THREE.MeshLambertMaterial({
-    transparent: true,
-    opacity: 1,
-    color: 0x1565c0,
-    depthTest: true,
-  });
+  const selectMat = currentUser
+    ? new THREE.MeshLambertMaterial({
+        transparent: true,
+        opacity: 1,
+        color: 0x1565c0,
+        depthTest: true,
+      })
+    : null;
 
   // Reference to the previous selection
   let preselectModel = { id: -1 };
@@ -257,12 +266,15 @@ const App = () => {
     >
       <Toaster position="bottom-left" reverseOrder={true} />
       <Settings />
-      <LoadFile
-        IFCview={IFCview}
-        loaderRef={loaderRef}
-        preselectMat={preselectMat}
-        selectMat={selectMat}
-      />
+      {currentUser ? (
+        <LoadFile
+          IFCview={IFCview}
+          loaderRef={loaderRef}
+          preselectMat={preselectMat}
+          selectMat={selectMat}
+        />
+      ) : null}
+      <Authentication />
       <div
         style={{
           position: "absolute",
@@ -301,11 +313,15 @@ const App = () => {
           </Typography>
         )}
       </div>
-      <canvas
-        id="three-canvas"
-        onDrop={(event) => dropHandler(event)}
-        onDragOver={(event) => dragOverHandler(event)}
-      ></canvas>
+      {currentUser ? (
+        <canvas
+          id="three-canvas"
+          onDrop={(event) => dropHandler(event)}
+          onDragOver={(event) => dragOverHandler(event)}
+        ></canvas>
+      ) : (
+        <canvas id="three-canvas"></canvas>
+      )}
     </SnackbarProvider>
   );
 };

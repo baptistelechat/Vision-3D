@@ -10,6 +10,8 @@ import store from "./utils/redux/store";
 import { Helmet } from "react-helmet";
 import { BrowserRouter } from "react-router-dom";
 import { Provider } from "react-redux";
+// FIREBASE
+import { FirebaseContextProvider } from "./utils/firebase/firebaseContext";
 
 ReactDOM.render(
   <Provider store={store}>
@@ -32,7 +34,9 @@ ReactDOM.render(
         ></script>
       </Helmet>
       <BrowserRouter>
-        <App />
+        <FirebaseContextProvider>
+          <App />
+        </FirebaseContextProvider>
       </BrowserRouter>
     </React.StrictMode>
   </Provider>,

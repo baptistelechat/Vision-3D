@@ -1,5 +1,5 @@
 // REACT
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 // MATERIAL UI
 import SpeedDial from "@mui/material/SpeedDial";
 import SpeedDialIcon from "@mui/material/SpeedDialIcon";
@@ -16,12 +16,15 @@ import PersonIcon from "@mui/icons-material/Person";
 import ShareIcon from "@mui/icons-material/Share";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import EmailIcon from "@mui/icons-material/Email";
+import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 // COLORS
 import { blueGrey, blue } from "@mui/material/colors";
 // OTHER
 import { CopyToClipboard } from "react-copy-to-clipboard";
 //COMPONENTS
-import Profile from "./Profile/Profile.jsx";
+import Confidentiality from "./Confidentiality/Confidentiality.jsx";
+// FIREBASE
+import { FirebaseContext } from "../utils/firebase/firebaseContext";
 
 const Settings = () => {
   const theme = useTheme();
@@ -41,8 +44,10 @@ const Settings = () => {
       ? "down"
       : "left"
   );
-  const [openProfile, setOpenProfile] = useState(false);
+  const [openConfidentiality, setOpenConfidentiality] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
+
+  const { currentUser } = useContext(FirebaseContext);
 
   window.addEventListener("resize", () => {
     console.log();
@@ -116,12 +121,12 @@ Application créée par Baptiste LECHAT et Matthieu LECHAT`,
   const actions = [
     {
       icon: (
-        <PersonIcon
+        <AccountBalanceIcon
           sx={{ color: blue[800] }}
-          onClick={() => setOpenProfile(true)}
+          onClick={() => setOpenConfidentiality(true)}
         />
       ),
-      name: "Mon profil",
+      name: "Confidentialité",
       disabled: false,
     },
     {
@@ -159,7 +164,10 @@ Application créée par Baptiste LECHAT et Matthieu LECHAT`,
 
   return (
     <React.Fragment>
-      <Profile openProfile={openProfile} setOpenProfile={setOpenProfile} />
+      <Confidentiality
+        openConfidentiality={openConfidentiality}
+        setOpenConfidentiality={setOpenConfidentiality}
+      />
       <SpeedDial
         ariaLabel="SpeedDial"
         sx={{ position: "absolute", top: 24, right: 24 }}
@@ -175,6 +183,20 @@ Application créée par Baptiste LECHAT et Matthieu LECHAT`,
               <AutoAwesomeIcon sx={{ color: blue[800] }} onClick={install} />
             }
             tooltipTitle="Installer PWA"
+            FabProps={{
+              size: "large",
+              style: {
+                fontSize: "1.5em",
+                backgroundColor: blue[50],
+              },
+            }}
+          />
+        ) : null}
+        {currentUser ? (
+          <SpeedDialAction
+            key="Mon profil"
+            icon={<PersonIcon sx={{ color: blue[800] }} />}
+            tooltipTitle="Mon profil"
             FabProps={{
               size: "large",
               style: {

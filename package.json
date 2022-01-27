@@ -31,6 +31,7 @@
     "@testing-library/user-event": "^13.5.0",
     "dotenv": "^10.0.0",
     "emailjs-com": "^3.2.0",
+    "firebase": "^9.6.4",
     "notistack": "^2.0.3",
     "react": "^17.0.2",
     "react-copy-to-clipboard": "^5.0.4",

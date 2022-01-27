@@ -17,7 +17,7 @@ import { useNavigate } from "react-router-dom";
 // COMPONENTS
 import RGPDrequest from "./RGPDrequest";
 
-const RGPD = ({ openRGPD, setOpenRGPD, openProfile }) => {
+const RGPD = ({ openRGPD, setOpenRGPD, openConfidentiality }) => {
   const navigate = useNavigate();
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
@@ -38,7 +38,7 @@ const RGPD = ({ openRGPD, setOpenRGPD, openProfile }) => {
         fullScreen={fullScreen}
         onClose={handleClose}
         open={openRGPD}
-        hideBackdrop={openProfile}
+        hideBackdrop={openConfidentiality}
       >
         <DialogTitle>
           <Stack

@@ -21,7 +21,7 @@ import CGU from "./CGU";
 // OTHER
 import { useLocation, useNavigate } from "react-router-dom";
 
-const Profile = ({ openProfile, setOpenProfile }) => {
+const Confidentiality = ({ openConfidentiality, setOpenConfidentiality }) => {
   const { hash } = useLocation();
   const navigate = useNavigate();
 
@@ -43,7 +43,7 @@ const Profile = ({ openProfile, setOpenProfile }) => {
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   const handleClose = () => {
-    setOpenProfile(false);
+    setOpenConfidentiality(false);
   };
 
   return (
@@ -51,21 +51,27 @@ const Profile = ({ openProfile, setOpenProfile }) => {
       <CGU
         openCGU={openCGU}
         setOpenCGU={setOpenCGU}
-        openProfile={openProfile}
+        openConfidentiality={openConfidentiality}
       />
       <RGPD
         openRGPD={openRGPD}
         setOpenRGPD={setOpenRGPD}
-        openProfile={openProfile}
+        openConfidentiality={openConfidentiality}
       />
       <License
         openLicense={openLicense}
         setOpenLicense={setOpenLicense}
-        openProfile={openProfile}
+        openConfidentiality={openConfidentiality}
       />
-      <Dialog fullScreen={fullScreen} onClose={handleClose} open={openProfile}>
+      <Dialog
+        fullScreen={fullScreen}
+        onClose={handleClose}
+        open={openConfidentiality}
+      >
         <DialogTitle>
-          <h3 style={{ marginTop: "8px", marginBottom: "8px" }}>Mon Profil</h3>
+          <h3 style={{ marginTop: "8px", marginBottom: "8px" }}>
+            Confidentialité
+          </h3>
           <IconButton
             style={{ right: "12px", top: "12px", position: "absolute" }}
             onClick={handleClose}
@@ -75,8 +81,8 @@ const Profile = ({ openProfile, setOpenProfile }) => {
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description" sx={{ mb: "16px" }}>
-            Retrouvez içi l'ensemble des informations relatives à votre compte
-            Vision 3D
+            Retrouvez içi l'ensemble des informations relatives à la
+            confidentialité
           </DialogContentText>
           <Stack
             direction="column"
@@ -125,4 +131,4 @@ const Profile = ({ openProfile, setOpenProfile }) => {
   );
 };
 
-export default Profile;
+export default Confidentiality;

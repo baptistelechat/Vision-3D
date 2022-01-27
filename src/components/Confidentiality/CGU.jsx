@@ -14,7 +14,7 @@ import SubjectIcon from "@mui/icons-material/Subject";
 // OTHER
 import { useNavigate } from "react-router-dom";
 
-const CGU = ({ openCGU, setOpenCGU, openProfile }) => {
+const CGU = ({ openCGU, setOpenCGU, openConfidentiality }) => {
   const navigate = useNavigate();
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
@@ -28,7 +28,7 @@ const CGU = ({ openCGU, setOpenCGU, openProfile }) => {
       fullScreen={fullScreen}
       onClose={handleClose}
       open={openCGU}
-      hideBackdrop={openProfile}
+      hideBackdrop={openConfidentiality}
     >
       <DialogTitle>
         <Stack
