@@ -10,7 +10,7 @@ import THREE from "./utils/three/three";
 import { IFCLoader } from "web-ifc-three/IFCLoader";
 // COMPONENTS
 import LoadFile from "./components/LoadFile.jsx";
-import Settings from "./components/Settings";
+import Settings from "./components/Settings/Settings.jsx";
 import Authentication from "./components/Authentication/Authentication";
 // OTHER
 import { SnackbarProvider } from "notistack";
@@ -21,14 +21,14 @@ import {
   disposeBoundsTree,
 } from "three-mesh-bvh";
 // REDUX
-import { useSelector } from "react-redux";
+// import { useSelector } from "react-redux";
 // STYLES
 import "./App.css";
 // FIREBASE
 import { FirebaseContext } from "./utils/firebase/firebaseContext";
 
 const App = () => {
-  const ifcModels = useSelector((state) => state.ifcModels.value);
+  // const ifcModels = useSelector((state) => state.ifcModels.value);
 
   const loaderRef = useRef();
   const cameraRef = useRef();
@@ -130,118 +130,114 @@ const App = () => {
     animate();
   }, []);
 
-  //Raycaster
-  const raycaster = new THREE.Raycaster();
-  raycaster.firstHitOnly = true;
-  const mouse = new THREE.Vector2();
+  // //Raycaster
+  // const raycaster = new THREE.Raycaster();
+  // raycaster.firstHitOnly = true;
+  // const mouse = new THREE.Vector2();
 
-  const cast = (event) => {
-    // Computes the position of the mouse on the screen
-    const bounds = document
-      .getElementById("three-canvas")
-      .getBoundingClientRect();
+  // const cast = (event) => {
+  //   // Computes the position of the mouse on the screen
+  //   const bounds = document
+  //     .getElementById("three-canvas")
+  //     .getBoundingClientRect();
 
-    const x1 = event.clientX - bounds.left;
-    const x2 = bounds.right - bounds.left;
-    mouse.x = (x1 / x2) * 2 - 1;
+  //   const x1 = event.clientX - bounds.left;
+  //   const x2 = bounds.right - bounds.left;
+  //   mouse.x = (x1 / x2) * 2 - 1;
 
-    const y1 = event.clientY - bounds.top;
-    const y2 = bounds.bottom - bounds.top;
-    mouse.y = -(y1 / y2) * 2 + 1;
+  //   const y1 = event.clientY - bounds.top;
+  //   const y2 = bounds.bottom - bounds.top;
+  //   mouse.y = -(y1 / y2) * 2 + 1;
 
-    // Places it on the camera pointing to the mouse
-    raycaster.setFromCamera(mouse, cameraRef.current);
+  //   // Places it on the camera pointing to the mouse
+  //   raycaster.setFromCamera(mouse, cameraRef.current);
 
-    // Casts a ray
-    return raycaster.intersectObjects(ifcModels);
-  };
+  //   // Casts a ray
+  //   return raycaster.intersectObjects(ifcModels);
+  // };
 
-  const pick = async (event) => {
-    const found = cast(event)[0];
-    if (found) {
-      const index = found.faceIndex;
-      const geometry = found.object.geometry;
-      const ifc = loaderRef.current.ifcManager;
-      const id = ifc.getExpressId(geometry, index);
-      const modelID = found.object.modelID;
-      const props = await ifc.getItemProperties(modelID, id);
-      console.log(props);
-      const type = await ifc.getTypeProperties(modelID, id);
-      console.log(type);
-      const material = await ifc.getMaterialsProperties(modelID, id);
-      console.log(material);
-      const sets = await ifc.getPropertySets(modelID, id);
-      console.log(sets);
-      const tree = await ifc.getSpatialStructure(modelID, id);
-      console.log(tree);
-    }
-  };
+  // const pick = async (event) => {
+  //   const found = cast(event)[0];
+  //   if (found) {
+  //     const index = found.faceIndex;
+  //     const geometry = found.object.geometry;
+  //     const ifc = loaderRef.current.ifcManager;
+  //     const id = ifc.getExpressId(geometry, index);
+  //     const modelID = found.object.modelID;
+  //     const props = await ifc.getItemProperties(modelID, id);
+  //     console.log(props);
+  //     const type = await ifc.getTypeProperties(modelID, id);
+  //     console.log(type);
+  //     const material = await ifc.getMaterialsProperties(modelID, id);
+  //     console.log(material);
+  //     const sets = await ifc.getPropertySets(modelID, id);
+  //     console.log(sets);
+  //     const tree = await ifc.getSpatialStructure(modelID, id);
+  //     console.log(tree);
+  //   }
+  // };
 
   // Creates subset material
-  const preselectMat = currentUser
-    ? new THREE.MeshLambertMaterial({
-        transparent: true,
-        opacity: 0.5,
-        color: 0x1565c0,
-        depthTest: true,
-      })
-    : null;
+  // const preselectMat = new THREE.MeshLambertMaterial({
+  //   transparent: true,
+  //   opacity: 0.5,
+  //   color: 0x1565c0,
+  //   depthTest: true,
+  // });
 
-  const selectMat = currentUser
-    ? new THREE.MeshLambertMaterial({
-        transparent: true,
-        opacity: 1,
-        color: 0x1565c0,
-        depthTest: true,
-      })
-    : null;
+  // const selectMat = new THREE.MeshLambertMaterial({
+  //   transparent: true,
+  //   opacity: 1,
+  //   color: 0x1565c0,
+  //   depthTest: true,
+  // });
 
-  // Reference to the previous selection
-  let preselectModel = { id: -1 };
+  // // Reference to the previous selection
+  // let preselectModel = { id: -1 };
 
-  const highlight = (event, material, model) => {
-    const found = cast(event)[0];
-    if (found) {
-      // Gets model ID
-      model.id = found.object.modelID;
+  // const highlight = (event, material, model) => {
+  //   const found = cast(event)[0];
+  //   if (found) {
+  //     // Gets model ID
+  //     model.id = found.object.modelID;
 
-      // Gets Express ID
-      const index = found.faceIndex;
-      const geometry = found.object.geometry;
-      const ifc = loaderRef.current.ifcManager;
-      const id = ifc.getExpressId(geometry, index);
+  //     // Gets Express ID
+  //     const index = found.faceIndex;
+  //     const geometry = found.object.geometry;
+  //     const ifc = loaderRef.current.ifcManager;
+  //     const id = ifc.getExpressId(geometry, index);
 
-      // Creates subset
-      loaderRef.current.ifcManager.createSubset({
-        modelID: model.id,
-        ids: [id],
-        material: material,
-        scene: IFCview,
-        removePrevious: true,
-      });
-    } else {
-      // Removes previous highlight
-      loaderRef.current.ifcManager.removeSubset(model.id, IFCview, material);
-    }
-  };
+  //     // Creates subset
+  //     loaderRef.current.ifcManager.createSubset({
+  //       modelID: model.id,
+  //       ids: [id],
+  //       material: material,
+  //       scene: IFCview,
+  //       removePrevious: true,
+  //     });
+  //   } else {
+  //     // Removes previous highlight
+  //     loaderRef.current.ifcManager.removeSubset(model.id, IFCview, material);
+  //   }
+  // };
 
-  window.onmousemove = (event) => {
-    if (isMobile) {
-      pick(event);
-      highlight(event, selectMat, selectModel);
-    } else {
-      highlight(event, preselectMat, preselectModel);
-    }
-  };
+  // window.onmousemove = (event) => {
+  //   if (isMobile) {
+  //     pick(event);
+  //     highlight(event, selectMat, selectModel);
+  //   } else {
+  //     highlight(event, preselectMat, preselectModel);
+  //   }
+  // };
 
-  const selectModel = { id: -1 };
+  // const selectModel = { id: -1 };
 
-  if (document.getElementById("three-canvas") !== null) {
-    document.getElementById("three-canvas").ondblclick = (event) => {
-      pick(event);
-      highlight(event, selectMat, selectModel);
-    };
-  }
+  // if (document.getElementById("three-canvas") !== null) {
+  //   document.getElementById("three-canvas").ondblclick = (event) => {
+  //     pick(event);
+  //     highlight(event, selectMat, selectModel);
+  //   };
+  // }
 
   function dropHandler(ev) {
     // Prevent default behavior (Prevent file from being opened)
@@ -270,8 +266,10 @@ const App = () => {
         <LoadFile
           IFCview={IFCview}
           loaderRef={loaderRef}
-          preselectMat={preselectMat}
-          selectMat={selectMat}
+          // preselectMat={preselectMat}
+          // selectMat={selectMat}
+          preselectMat={null}
+          selectMat={null}
         />
       ) : null}
       <Authentication />

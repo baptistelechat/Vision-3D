@@ -21,6 +21,8 @@ const DropZone = ({
   setOpenProgress,
   setPercentProgress,
   enqueueSnackbar,
+  setOpenSaveFileDialog,
+  setFileData,
 }) => {
   const dispatch = useDispatch();
 
@@ -49,10 +51,11 @@ const DropZone = ({
             loaderRef.current.ifcManager.setOnProgress((event) =>
               loadingFileProgress(event)
             );
+            var ifc = "";
             var reader = new FileReader();
             reader.readAsText(file, "UTF-8");
             reader.onload = function (e) {
-              console.log(e.target.result);
+              ifc = e.target.result;
             };
             const ifcURL = URL.createObjectURL(file);
             const object = await loaderRef.current.loadAsync(ifcURL);
@@ -69,6 +72,12 @@ const DropZone = ({
                 variant: "success",
               }
             );
+            await setFileData({
+              name: file.name,
+              size: (file.size / Math.pow(10, 6)).toFixed(2),
+              ifc: ifc,
+            });
+            await setTimeout(setOpenSaveFileDialog, 1000, true);
           };
           loadFile();
           document.getElementById("dropZone").style.display = "none";
@@ -89,6 +98,8 @@ const DropZone = ({
       setOpenProgress,
       setPercentProgress,
       enqueueSnackbar,
+      setOpenSaveFileDialog,
+      setFileData,
       dispatch,
     ]
   );

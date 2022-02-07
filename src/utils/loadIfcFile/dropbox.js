@@ -9,7 +9,9 @@ const openDropboxPicker = async (
   setPercentProgress,
   enqueueSnackbar,
   dispatch,
-  addModel
+  addModel,
+  setOpenSaveFileDialog,
+  setFileData
 ) => {
   const options = {
     // Required. Called when a user selects an item in the Chooser.
@@ -28,8 +30,9 @@ const openDropboxPicker = async (
           loadingFileProgress(event)
         );
         // Get content of link
+        var ifc = "";
         getData(ifcUrl, (responseText) => {
-          console.log(responseText);
+          ifc = responseText;
         });
         const object = await loaderRef.current.loadAsync(ifcUrl + "?dl=1");
         object.name = "IFCModel";
@@ -45,6 +48,12 @@ const openDropboxPicker = async (
             variant: "success",
           }
         );
+        await setFileData({
+          name: files[0].name,
+          size: (files[0].bytes / Math.pow(10, 6)).toFixed(2),
+          ifc: ifc,
+        });
+        await setTimeout(setOpenSaveFileDialog, 1000, true);
       } else {
         enqueueSnackbar(`${files[0].name} n'est pas un fichier IFC valide`, {
           variant: "error",

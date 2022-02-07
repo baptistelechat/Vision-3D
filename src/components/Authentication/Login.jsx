@@ -11,13 +11,13 @@ import { useTheme } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
 import Fab from "@mui/material/Fab";
 import InputAdornment from "@mui/material/InputAdornment";
-import FormControl from "@mui/material/FormControl";
 // MATERIAL UI ICON
 import CloseIcon from "@mui/icons-material/Close";
 import LoginIcon from "@mui/icons-material/Login";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 // NOTISTACK
 import { useSnackbar } from "notistack";
 // FIREBASE
@@ -46,6 +46,10 @@ const Login = ({ openLogin, setOpenLogin }) => {
       await signIn(email, password);
       await enqueueSnackbar(`Vous êtes connecté avec l'email ${email}`, {
         variant: "success",
+      });
+      setRequestData({
+        email: "",
+        password: "",
       });
       handleClose();
     } catch (error) {
@@ -138,18 +142,32 @@ const Login = ({ openLogin, setOpenLogin }) => {
           }}
         />
         <Stack direction="row" justifyContent="flex-end" alignItems="center">
-          <Fab
-            disabled={email !== "" && password !== "" ? false : true}
-            variant="extended"
-            size="medium"
-            color="primary"
-            aria-label="add"
-            sx={{ mt: "16px", mb: "16px", mr: "16px" }}
-            onClick={handleSubmit}
-          >
-            <LockOpenIcon sx={{ mr: "8px" }} />
-            Envoyer
-          </Fab>
+          {email !== "" && password !== "" ? (
+            <Fab
+              variant="extended"
+              size="medium"
+              color="primary"
+              aria-label="add"
+              sx={{ mt: "16px", mb: "16px", mr: "16px" }}
+              onClick={handleSubmit}
+            >
+              <LockOpenIcon sx={{ mr: "8px" }} />
+              Se Connecter
+            </Fab>
+          ) : (
+            <Fab
+              disabled
+              variant="extended"
+              size="medium"
+              color="primary"
+              aria-label="add"
+              sx={{ mt: "16px", mb: "16px", mr: "16px" }}
+              onClick={handleSubmit}
+            >
+              <LockOutlinedIcon sx={{ mr: "8px" }} />
+              Se Connecter
+            </Fab>
+          )}
         </Stack>
       </DialogContent>
     </Dialog>

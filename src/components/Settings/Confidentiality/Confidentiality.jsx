@@ -14,6 +14,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import CopyrightIcon from "@mui/icons-material/Copyright";
 import SubjectIcon from "@mui/icons-material/Subject";
 import SecurityIcon from "@mui/icons-material/Security";
+import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 // COMPONENTS
 import License from "./License";
 import RGPD from "./RGPD";
@@ -44,6 +45,7 @@ const Confidentiality = ({ openConfidentiality, setOpenConfidentiality }) => {
 
   const handleClose = () => {
     setOpenConfidentiality(false);
+    navigate("");
   };
 
   return (
@@ -69,9 +71,17 @@ const Confidentiality = ({ openConfidentiality, setOpenConfidentiality }) => {
         open={openConfidentiality}
       >
         <DialogTitle>
-          <h3 style={{ marginTop: "8px", marginBottom: "8px" }}>
-            Confidentialité
-          </h3>
+          <Stack
+            direction="row"
+            justifyContent="flex-start"
+            alignItems="center"
+            spacing={1}
+            sx={{ mt: "8px" }}
+          >
+            <AccountBalanceIcon fontSize="large" />
+            <h3>Confidentialité</h3>
+          </Stack>
+
           <IconButton
             style={{ right: "12px", top: "12px", position: "absolute" }}
             onClick={handleClose}

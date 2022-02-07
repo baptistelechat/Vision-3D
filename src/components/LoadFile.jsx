@@ -27,6 +27,7 @@ import {
 import Progress from "./Progress";
 import DropZoneDialog from "./DropZoneDialog";
 import DropZone from "./DropZone";
+import SaveFileDialog from "./SaveFileDialog";
 // UTILS
 import openLocalFile from "../utils/loadIfcFile/localFile";
 import openOneDrivePicker from "../utils/loadIfcFile/oneDrive";
@@ -43,6 +44,13 @@ const LoadFile = ({ IFCview, loaderRef, preselectMat, selectMat }) => {
   const [percentProgress, setPercentProgress] = useState("Chargement ...");
   const [randomLottieFile, setRandomLottieFile] = useState(1);
   const [openDropZone, setOpenDropZone] = useState(false);
+  const [openSaveFileDialog, setOpenSaveFileDialog] = useState(false);
+  const [fileData, setFileData] = useState({
+    name: "",
+    size: "",
+    ifc: "",
+  });
+
   const { enqueueSnackbar } = useSnackbar();
 
   const isMobile =
@@ -67,7 +75,6 @@ const LoadFile = ({ IFCview, loaderRef, preselectMat, selectMat }) => {
         IFCview,
         selectMat
       );
-      console.log("resetView");
     }
     const selectedObject = IFCview.getObjectByName("IFCModel");
     if (!(selectedObject instanceof THREE.Object3D)) return false;
@@ -191,7 +198,6 @@ const LoadFile = ({ IFCview, loaderRef, preselectMat, selectMat }) => {
         var metaData = JSON.parse(responseText);
         if (metaData.title.substr(metaData.title.length - 3) === "ifc") {
           getData(metaData.downloadUrl, async (text) => {
-            console.log(text);
             const blob = new Blob([text]);
             await randomLottie();
             await setOpenProgress(true);
@@ -221,6 +227,12 @@ const LoadFile = ({ IFCview, loaderRef, preselectMat, selectMat }) => {
                 variant: "success",
               }
             );
+            await setFileData({
+              name: metaData.title,
+              size: metaData.fileSize,
+              ifc: text,
+            });
+            await setTimeout(setOpenSaveFileDialog, 1000, true);
           });
         } else {
           enqueueSnackbar(
@@ -260,7 +272,9 @@ const LoadFile = ({ IFCview, loaderRef, preselectMat, selectMat }) => {
               setPercentProgress,
               enqueueSnackbar,
               dispatch,
-              addModel
+              addModel,
+              setOpenSaveFileDialog,
+              setFileData
             )
           }
         />
@@ -296,7 +310,9 @@ const LoadFile = ({ IFCview, loaderRef, preselectMat, selectMat }) => {
               setPercentProgress,
               enqueueSnackbar,
               dispatch,
-              addModel
+              addModel,
+              setOpenSaveFileDialog,
+              setFileData
             )
           }
         />
@@ -365,7 +381,9 @@ const LoadFile = ({ IFCview, loaderRef, preselectMat, selectMat }) => {
               setPercentProgress,
               enqueueSnackbar,
               dispatch,
-              addModel
+              addModel,
+              setOpenSaveFileDialog,
+              setFileData
             )
           }
         />
@@ -393,7 +411,9 @@ const LoadFile = ({ IFCview, loaderRef, preselectMat, selectMat }) => {
               setPercentProgress,
               enqueueSnackbar,
               dispatch,
-              addModel
+              addModel,
+              setOpenSaveFileDialog,
+              setFileData
             )
           }
         />
@@ -411,6 +431,11 @@ const LoadFile = ({ IFCview, loaderRef, preselectMat, selectMat }) => {
         percentProgress={percentProgress}
         randomLottieFile={randomLottieFile}
       />
+      <SaveFileDialog
+        openSaveFileDialog={openSaveFileDialog}
+        setOpenSaveFileDialog={setOpenSaveFileDialog}
+        fileData={fileData}
+      />
       {isMobile ? (
         <UploadLocalFileOnMobile />
       ) : (
@@ -426,6 +451,8 @@ const LoadFile = ({ IFCview, loaderRef, preselectMat, selectMat }) => {
             setOpenProgress={setOpenProgress}
             setPercentProgress={setPercentProgress}
             enqueueSnackbar={enqueueSnackbar}
+            setOpenSaveFileDialog={setOpenSaveFileDialog}
+            setFileData={setFileData}
           />
           <DropZone
             randomLottie={randomLottie}
@@ -436,6 +463,8 @@ const LoadFile = ({ IFCview, loaderRef, preselectMat, selectMat }) => {
             setOpenProgress={setOpenProgress}
             setPercentProgress={setPercentProgress}
             enqueueSnackbar={enqueueSnackbar}
+            setOpenSaveFileDialog={setOpenSaveFileDialog}
+            setFileData={setFileData}
           />
           <SpeedDial
             ariaLabel="SpeedDial"

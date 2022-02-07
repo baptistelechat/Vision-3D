@@ -20,13 +20,18 @@ import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 // COLORS
 import { blueGrey, blue } from "@mui/material/colors";
 // OTHER
-import { CopyToClipboard } from "react-copy-to-clipboard";
+import { CopyToClipboard } from "react-copy-to-clipboard"; // OTHER
+import { useLocation, useNavigate } from "react-router-dom";
 //COMPONENTS
 import Confidentiality from "./Confidentiality/Confidentiality.jsx";
+import Profile from "./Profile.jsx";
 // FIREBASE
-import { FirebaseContext } from "../utils/firebase/firebaseContext";
+import { FirebaseContext } from "../../utils/firebase/firebaseContext";
 
 const Settings = () => {
+  const { hash } = useLocation();
+  const navigate = useNavigate();
+
   const theme = useTheme();
   const isSmallDevice = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -44,7 +49,18 @@ const Settings = () => {
       ? "down"
       : "left"
   );
-  const [openConfidentiality, setOpenConfidentiality] = useState(false);
+  const [openConfidentiality, setOpenConfidentiality] = useState(
+    hash === "#confidentialite" ? true : false
+  );
+  const [openProfile, setOpenProfile] = useState(
+    hash === "#profil" ? true : false
+  );
+
+  window.onhashchange = () => {
+    setOpenConfidentiality(hash === "#confidentialite" ? true : false);
+    setOpenProfile(hash === "#profil" ? true : false);
+  };
+
   const { enqueueSnackbar } = useSnackbar();
 
   const { currentUser } = useContext(FirebaseContext);
@@ -123,7 +139,10 @@ Application créée par Baptiste LECHAT et Matthieu LECHAT`,
       icon: (
         <AccountBalanceIcon
           sx={{ color: blue[800] }}
-          onClick={() => setOpenConfidentiality(true)}
+          onClick={() => {
+            setOpenConfidentiality(true);
+            navigate("#confidentialite");
+          }}
         />
       ),
       name: "Confidentialité",
@@ -168,6 +187,12 @@ Application créée par Baptiste LECHAT et Matthieu LECHAT`,
         openConfidentiality={openConfidentiality}
         setOpenConfidentiality={setOpenConfidentiality}
       />
+
+      <Profile
+        openProfile={openProfile}
+        setOpenProfile={setOpenProfile}
+      />
+
       <SpeedDial
         ariaLabel="SpeedDial"
         sx={{ position: "absolute", top: 24, right: 24 }}
@@ -195,7 +220,15 @@ Application créée par Baptiste LECHAT et Matthieu LECHAT`,
         {currentUser ? (
           <SpeedDialAction
             key="Mon profil"
-            icon={<PersonIcon sx={{ color: blue[800] }} />}
+            icon={
+              <PersonIcon
+                sx={{ color: blue[800] }}
+                onClick={() => {
+                  setOpenProfile(true);
+                  navigate("#profil");
+                }}
+              />
+            }
             tooltipTitle="Mon profil"
             FabProps={{
               size: "large",

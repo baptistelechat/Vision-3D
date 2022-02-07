@@ -8,7 +8,9 @@ const openOneDrivePicker = async (
   setPercentProgress,
   enqueueSnackbar,
   dispatch,
-  addModel
+  addModel,
+  setOpenSaveFileDialog,
+  setFileData
 ) => {
   let odOptions = {
     clientId: process.env.REACT_APP_MS_GRAPH_CLIENT_ID,
@@ -25,6 +27,12 @@ const openOneDrivePicker = async (
         await randomLottie();
         await resetView();
         const ifcURL = files.value[0]["@microsoft.graph.downloadUrl"];
+        var ifc = "";
+        fetch(ifcURL).then((data) => {
+          data.text().then((text) => {
+            ifc = text;
+          });
+        });
         enqueueSnackbar(
           `${files.value[0].name} en cours de traitement, veuillez patienter...`,
           {
@@ -48,6 +56,12 @@ const openOneDrivePicker = async (
             variant: "success",
           }
         );
+        await setFileData({
+          name: files.value[0].name,
+          size: (files.value[0].size / Math.pow(10, 6)).toFixed(2),
+          ifc: ifc,
+        });
+        await setTimeout(setOpenSaveFileDialog, 1000, true);
       } else {
         enqueueSnackbar(
           `${files.value[0].name} n'est pas un fichier IFC valide`,

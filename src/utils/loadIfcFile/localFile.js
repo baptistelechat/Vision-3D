@@ -9,7 +9,9 @@ const openLocalFile = async (
   setPercentProgress,
   enqueueSnackbar,
   dispatch,
-  addModel
+  addModel,
+  setOpenSaveFileDialog,
+  setFileData
 ) => {
   await randomLottie();
   await setOpenProgress(true);
@@ -28,10 +30,11 @@ const openLocalFile = async (
       loaderRef.current.ifcManager.setOnProgress((event) =>
         loadingFileProgress(event)
       );
+      var ifc = "";
       var reader = new FileReader();
       reader.readAsText(file, "UTF-8");
       reader.onload = function (e) {
-        console.log(e.target.result);
+        ifc =  e.target.result;
       };
       const ifcURL = URL.createObjectURL(file);
       const object = await loaderRef.current.loadAsync(ifcURL);
@@ -48,6 +51,12 @@ const openLocalFile = async (
           variant: "success",
         }
       );
+      await setFileData({
+        name: file.name,
+        size: (file.size / Math.pow(10, 6)).toFixed(2),
+        ifc: ifc,
+      });
+      await setTimeout(setOpenSaveFileDialog, 1000, true);
     } else {
       enqueueSnackbar(`${file.name} n'est pas un fichier IFC valide`, {
         variant: "error",
