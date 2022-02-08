@@ -143,7 +143,7 @@ const Profile = ({
 
   const request = async () => {
     console.log("🚗 route :", pathname);
-
+    await setOpenProgress(true);
     if (pathname !== "/") {
       const q = await query(
         projectsCollectionRef,
@@ -154,11 +154,12 @@ const Profile = ({
         ...doc.data(),
         id: doc.id,
       }));
-      console.log(projects);
       if (projects[0] !== undefined) {
         console.log(projects[0]);
         handleOpenFileFromFirebase(projects[0]);
       }
+    } else {
+      await setOpenProgress(false);
     }
   };
 
