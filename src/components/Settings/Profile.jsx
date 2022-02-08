@@ -113,7 +113,7 @@ const Profile = ({
 
   const handleOpenFileFromFirebase = useCallback(
     async (file) => {
-      await navigate(`/${file.url}`);
+      await navigate(file.url);
       await handleClose();
       await firebase(
         randomLottie,
@@ -147,7 +147,7 @@ const Profile = ({
     if (pathname !== "/") {
       const q = await query(
         projectsCollectionRef,
-        where("url", "==", pathname.replace("/", ""))
+        where("url", "==", pathname)
       );
       const querySnapshot = await getDocs(q);
       const projects = querySnapshot.docs.map((doc) => ({
@@ -157,6 +157,12 @@ const Profile = ({
       if (projects[0] !== undefined) {
         console.log(projects[0]);
         handleOpenFileFromFirebase(projects[0]);
+      } else {
+        console.log("🏡 project : no project found");
+        await enqueueSnackbar("Aucun projet correspondant à votre recherche", {
+          variant: "error",
+        });
+        setOpenProgress(false);
       }
     } else {
       await setOpenProgress(false);

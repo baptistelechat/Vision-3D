@@ -74,7 +74,7 @@ const SaveFileDialog = ({
 
     const token = process.env.REACT_APP_GITHUB_PERSONAL_ACCESS_TOKEN;
 
-    const repos = process.env.REACT_APP_GITHUB_FILES_STORAGE_REPOS
+    const repos = process.env.REACT_APP_GITHUB_FILES_STORAGE_REPOS;
 
     const config = {
       method: "put",
@@ -98,7 +98,10 @@ const SaveFileDialog = ({
           ifc: url,
           username,
           uid,
-          url: fileName.replaceAll(/\s/g, "_"),
+          url: `/${username}/${fileName
+            .replace(/\s/g, "_")
+            .normalize("NFD")
+            .replace(/\p{Diacritic}/gu, "")}`,
         });
         await enqueueSnackbar(
           `${fileName}.ifc (${fileData.size} Mo) enregistré avec succès`,
@@ -109,7 +112,12 @@ const SaveFileDialog = ({
         await handleClose();
         await setFileName("");
         await setIsLoading(false);
-        await navigate(`/${fileName.replace(/\s/g, "_")}`);
+        await navigate(
+          `/${username}/${fileName
+            .replace(/\s/g, "_")
+            .normalize("NFD")
+            .replace(/\p{Diacritic}/gu, "")}`
+        );
       })
       .catch(function (error) {
         console.log(error);
@@ -161,13 +169,23 @@ const SaveFileDialog = ({
                 .map((project) => {
                   return project.url.toLowerCase();
                 })
-                .includes(fileName.replaceAll(/\s/g, "_").toLowerCase())}
+                .includes(
+                  `/${username}/${fileName
+                    .replace(/\s/g, "_")
+                    .normalize("NFD")
+                    .replace(/\p{Diacritic}/gu, "")}`.toLowerCase()
+                )}
               helperText={
                 projects
                   .map((project) => {
                     return project.url.toLowerCase();
                   })
-                  .includes(fileName.replaceAll(/\s/g, "_").toLowerCase())
+                  .includes(
+                    `/${username}/${fileName
+                      .replace(/\s/g, "_")
+                      .normalize("NFD")
+                      .replace(/\p{Diacritic}/gu, "")}`.toLowerCase()
+                  )
                   ? "Nom du projet déjà utilisé"
                   : ""
               }
@@ -182,9 +200,14 @@ const SaveFileDialog = ({
             />
 
             <hr />
-            <h4 style={{ color: "#1565c0" }}>
-              Adresse du projet : {window.location.hostname}:
-              {window.location.port ? window.location.port : ""}/{fileName.replace(/\s/g, "_")}
+            <h4 style={{ color: "#1565c0", marginTop: "8px" }}>
+              Adresse du projet :
+            </h4>
+            <h4 style={{ color: "#1565c0", marginBottom: "8px" }}>
+              {`/${username}/${fileName
+                .replace(/\s/g, "_")
+                .normalize("NFD")
+                .replace(/\p{Diacritic}/gu, "")}`}
             </h4>
             <h4>Poids : {fileData.size} Mo</h4>
 
@@ -225,7 +248,12 @@ const SaveFileDialog = ({
                       .map((project) => {
                         return project.url.toLowerCase();
                       })
-                      .includes(fileName.replaceAll(/\s/g, "_").toLowerCase())
+                      .includes(
+                        `/${username}/${fileName
+                          .replace(/\s/g, "_")
+                          .normalize("NFD")
+                          .replace(/\p{Diacritic}/gu, "")}`.toLowerCase()
+                      )
                   }
                   variant="extended"
                   size="medium"
