@@ -261,7 +261,12 @@ const App = () => {
       TransitionComponent={Slide}
     >
       <Toaster position="bottom-left" reverseOrder={true} />
-      <Settings />
+      <Settings
+        IFCview={IFCview}
+        loaderRef={loaderRef}
+        preselectMat={null}
+        selectMat={null}
+      />
       {currentUser ? (
         <LoadFile
           IFCview={IFCview}

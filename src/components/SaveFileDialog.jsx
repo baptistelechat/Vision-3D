@@ -22,7 +22,6 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import base64 from "base-64";
 import PropagateLoader from "react-spinners/PropagateLoader";
-
 // FIREBASE
 import { db } from "../utils/firebase/firebaseConfig";
 import { collection, addDoc } from "firebase/firestore";
@@ -75,9 +74,11 @@ const SaveFileDialog = ({
 
     const token = process.env.REACT_APP_GITHUB_PERSONAL_ACCESS_TOKEN;
 
+    const repos = process.env.REACT_APP_GITHUB_FILES_STORAGE_REPOS
+
     const config = {
       method: "put",
-      url: `https://api.github.com/repos/${process.env.REACT_APP_GITHUB_FILES_STORAGE_REPOS}/contents/${username}_${uid}/${fileName}.ifc`,
+      url: `https://api.github.com/repos/${repos}/contents/${username}_${uid}/${fileName}.ifc`,
       // url: `https://api.github.com/repos/baptistelechat/Vision-3D-files/git/blobs/0923ac2929841e0d19ed0de7028014bd87a47dc0`,
       headers: {
         Authorization: `Bearer ${token}`,

@@ -28,7 +28,7 @@ import Profile from "./Profile.jsx";
 // FIREBASE
 import { FirebaseContext } from "../../utils/firebase/firebaseContext";
 
-const Settings = () => {
+const Settings = ({IFCview, loaderRef, preselectMat, selectMat}) => {
   const { hash } = useLocation();
   const navigate = useNavigate();
 
@@ -191,6 +191,10 @@ Application créée par Baptiste LECHAT et Matthieu LECHAT`,
       <Profile
         openProfile={openProfile}
         setOpenProfile={setOpenProfile}
+        IFCview={IFCview}
+        loaderRef={loaderRef}
+        preselectMat={preselectMat}
+        selectMat={selectMat}
       />
 
       <SpeedDial
