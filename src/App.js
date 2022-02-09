@@ -8,6 +8,8 @@ import { blue } from "@mui/material/colors";
 // THREE.js
 import THREE from "./utils/three/three";
 import { IFCLoader } from "web-ifc-three/IFCLoader";
+import { HorizontalBlurShader } from "./utils/three/shaders/HorizontalBlurShader";
+import { VerticalBlurShader } from "./utils/three/shaders/VerticalBlurShader";
 // COMPONENTS
 import LoadFile from "./components/LoadFile.jsx";
 import Settings from "./components/Settings/Settings.jsx";
@@ -21,17 +23,15 @@ import {
   disposeBoundsTree,
 } from "three-mesh-bvh";
 // REDUX
-// import { useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 // STYLES
 import "./App.css";
 // FIREBASE
 import { FirebaseContext } from "./utils/firebase/firebaseContext";
 
 const App = () => {
-  // const ifcModels = useSelector((state) => state.ifcModels.value);
-
   const loaderRef = useRef();
-  const cameraRef = useRef();
+  // const cameraRef = useRef();
   const [IFCview, setIFCview] = useState(null);
 
   const { currentUser } = useContext(FirebaseContext);
@@ -40,94 +40,331 @@ const App = () => {
     "ontouchstart" in document.documentElement &&
     navigator.userAgent.match(/Mobi/);
 
+  const ifcModels = useSelector((state) => state.ifcModels.value);
+  console.log(ifcModels);
+  if (ifcModels[0] !== undefined) {
+    var box = new THREE.Box3().setFromObject(ifcModels[0]);
+    console.log(box);
+    const x =
+      (((box.max.x < 0 ? box.max.x * -1 : box.max.x) +
+      (box.min.x < 0 ? box.min.x * -1 : box.min.x))/2)-box.max.x;
+    const y = box.min.y < 0 ? box.min.y * -1 : box.min.y;
+    const z =
+      (((box.max.z < 0 ? box.max.z * -1 : box.max.z) +
+      (box.min.z < 0 ? box.min.z * -1 : box.min.z))/2)-box.max.z;
+      ifcModels[0].translateX(x);
+      ifcModels[0].translateY(y);
+      ifcModels[0].translateZ(z);
+    }
+  // console.log(ifcModels);
+  // console.log(ifcModels[0] !== undefined ? ifcModels[0].modelID : "undefined");
+  // if (ifcModels[0] !== undefined) {
+  //   ifcModels[0].material = new THREE.MeshNormalMaterial();
+  // }
+  // if (ifcModels[0] !== undefined) {
+  //   ifcModels[0].material = new THREE.MeshLambertMaterial({
+  //     transparent: true,
+  //     opacity: 1,
+  //     color: new THREE.Color( 1, 0, 0 ),
+  //     depthTest: true,
+  //   });
+  // }
+
+  // console.log(new THREE.Color( 1, 0, 0 ).getHexString ());
+
   //Creates the Three.js scene
   useEffect(() => {
-    // Listen for window resize
-    window.addEventListener(
-      "resize",
-      function () {
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        cameraRef.current.aspect = window.innerWidth / window.innerHeight;
-        cameraRef.current.updateProjectionMatrix();
+    let camera, scene, renderer;
+
+    const meshes = [];
+
+    const PLANE_WIDTH = 100;
+    const PLANE_HEIGHT = 100;
+    const CAMERA_HEIGHT =12;
+
+    const state = {
+      shadow: {
+        blur: 2.5,
+        darkness: 1.5,
+        opacity: 1,
       },
-      false
-    );
-
-    const scene = new THREE.Scene();
-    setIFCview(scene);
-    // Sets up the IFC loading
-    loaderRef.current = new IFCLoader();
-    loaderRef.current.ifcManager.useWebWorkers(true, "../../IFCWorker.js");
-    loaderRef.current.ifcManager.setWasmPath("../../");
-    loaderRef.current.ifcManager.applyWebIfcConfig({
-      COORDINATE_TO_ORIGIN: true,
-      USE_FAST_BOOLS: false,
-    });
-
-    // Sets up optimized picking
-    loaderRef.current.ifcManager.setupThreeMeshBVH(
-      computeBoundsTree,
-      disposeBoundsTree,
-      acceleratedRaycast
-    );
-
-    //Object to store the size of the viewport
-    const size = {
-      width: window.innerWidth,
-      height: window.innerHeight,
+      plane: {
+        color: "#ffffff",
+        opacity: 0,
+      },
     };
 
-    //Creates the camera (point of view of the user)
-    const aspect = size.width / size.height;
-    cameraRef.current = new THREE.PerspectiveCamera(75, aspect);
-    cameraRef.current.position.z = 15;
-    cameraRef.current.position.y = 13;
-    cameraRef.current.position.x = 8;
+    let shadowGroup,
+      renderTarget,
+      renderTargetBlur,
+      shadowCamera,
+      cameraHelper,
+      depthMaterial,
+      horizontalBlurMaterial,
+      verticalBlurMaterial;
 
-    //Creates the lights of the scene
-    const lightColor = 0xffffff;
+    let plane, blurPlane, fillPlane;
 
-    const ambientLight = new THREE.AmbientLight(lightColor, 0.5);
-    scene.add(ambientLight);
-
-    const directionalLight = new THREE.DirectionalLight(lightColor, 1);
-    directionalLight.position.set(0, 10, 0);
-    directionalLight.target.position.set(-5, 0, 0);
-    scene.add(directionalLight);
-    scene.add(directionalLight.target);
-
-    //Sets up the renderer, fetching the canvas of the HTML
-    const threeCanvas = document.getElementById("three-canvas");
-    const renderer = new THREE.WebGLRenderer({
-      canvas: threeCanvas,
-      alpha: true,
-    });
-
-    renderer.setSize(size.width, size.height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-    //Creates grids and axes in the scene
-    const grid = new THREE.GridHelper(50, 30);
-    scene.add(grid);
-
-    const axes = new THREE.AxesHelper();
-    axes.material.depthTest = false;
-    axes.renderOrder = 1;
-    scene.add(axes);
-
-    //Creates the orbit controls (to navigate the scene)
-    const controls = new THREE.OrbitControls(cameraRef.current, threeCanvas);
-    controls.enableDamping = true;
-    controls.target.set(-2, 0, 0);
-
-    //Animation loop
-    const animate = () => {
-      controls.update();
-      renderer.render(scene, cameraRef.current);
-      requestAnimationFrame(animate);
-    };
-
+    init();
     animate();
+
+    function init() {
+      //Object to store the size of the viewport
+      const size = {
+        width: window.innerWidth,
+        height: window.innerHeight,
+      };
+
+      //Creates the camera (point of view of the user)
+      const aspect = size.width / size.height;
+      camera = new THREE.PerspectiveCamera(75, aspect, 0.1, 100);
+      camera.position.z = 15;
+      camera.position.y = 13;
+      camera.position.x = 8;
+
+      scene = new THREE.Scene();
+      setIFCview(scene);
+      scene.background = new THREE.Color(0xffffff);
+
+      //Creates the lights of the scene
+      const lightColor = 0xffffff;
+
+      const ambientLight = new THREE.AmbientLight(lightColor, 0.5);
+      scene.add(ambientLight);
+
+      const directionalLight = new THREE.DirectionalLight(lightColor, 1);
+      directionalLight.position.set(0, 10, 0);
+      directionalLight.target.position.set(-5, 0, 0);
+      scene.add(directionalLight);
+      scene.add(directionalLight.target);
+
+      // Sets up the IFC loading
+      loaderRef.current = new IFCLoader();
+      loaderRef.current.ifcManager.useWebWorkers(true, "../../IFCWorker.js");
+      loaderRef.current.ifcManager.setWasmPath("../../");
+      loaderRef.current.ifcManager.applyWebIfcConfig({
+        COORDINATE_TO_ORIGIN: true,
+        USE_FAST_BOOLS: false,
+      });
+
+      // Sets up optimized picking
+      loaderRef.current.ifcManager.setupThreeMeshBVH(
+        computeBoundsTree,
+        disposeBoundsTree,
+        acceleratedRaycast
+      );
+
+      window.addEventListener("resize", onWindowResize);
+
+      // add the example meshes
+
+      // const geometries = [
+      //   new THREE.BoxGeometry(0.4, 0.4, 0.4),
+      //   new THREE.IcosahedronGeometry(0.3),
+      //   new THREE.TorusKnotGeometry(0.4, 0.05, 256, 24, 1, 3),
+      // ];
+
+      // const material = new THREE.MeshNormalMaterial();
+
+      // for (let i = 0, l = geometries.length; i < l; i++) {
+      //   const angle = (i / l) * Math.PI * 2;
+
+      //   const geometry = geometries[i];
+      //   const mesh = new THREE.Mesh(geometry, material);
+      //   mesh.position.y = 0.1;
+      //   mesh.position.x = Math.cos(angle) / 2.0;
+      //   mesh.position.z = Math.sin(angle) / 2.0;
+      //   scene.add(mesh);
+      //   meshes.push(mesh);
+      // }
+
+      // //Creates grids and axes in the scene
+      // const grid = new THREE.GridHelper(50, 30);
+      // scene.add(grid);
+
+      // const axes = new THREE.AxesHelper();
+      // axes.material.depthTest = false;
+      // axes.renderOrder = 1;
+      // scene.add(axes);
+
+      // the container, if you need to move the plane just move this
+      shadowGroup = new THREE.Group();
+      shadowGroup.position.y = -0.3;
+      scene.add(shadowGroup);
+
+      // the render target that will show the shadows in the plane texture
+      renderTarget = new THREE.WebGLRenderTarget(512, 512);
+      renderTarget.texture.generateMipmaps = false;
+
+      // the render target that we will use to blur the first render target
+      renderTargetBlur = new THREE.WebGLRenderTarget(512, 512);
+      renderTargetBlur.texture.generateMipmaps = false;
+
+      // make a plane and make it face up
+      const planeGeometry = new THREE.PlaneGeometry(
+        PLANE_WIDTH,
+        PLANE_HEIGHT
+      ).rotateX(Math.PI / 2);
+      const planeMaterial = new THREE.MeshBasicMaterial({
+        map: renderTarget.texture,
+        opacity: state.shadow.opacity,
+        transparent: true,
+        depthWrite: false,
+      });
+      plane = new THREE.Mesh(planeGeometry, planeMaterial);
+      // make sure it's rendered after the fillPlane
+      plane.renderOrder = 1;
+      shadowGroup.add(plane);
+
+      // the y from the texture is flipped!
+      plane.scale.y = -1;
+
+      // the plane onto which to blur the texture
+      blurPlane = new THREE.Mesh(planeGeometry);
+      blurPlane.visible = false;
+      shadowGroup.add(blurPlane);
+
+      // the plane with the color of the ground
+      const fillPlaneMaterial = new THREE.MeshBasicMaterial({
+        color: state.plane.color,
+        opacity: state.plane.opacity,
+        transparent: true,
+        depthWrite: false,
+      });
+      fillPlane = new THREE.Mesh(planeGeometry, fillPlaneMaterial);
+      fillPlane.rotateX(Math.PI);
+      shadowGroup.add(fillPlane);
+
+      // the camera to render the depth material from
+      shadowCamera = new THREE.OrthographicCamera(
+        -PLANE_WIDTH / 2,
+        PLANE_WIDTH / 2,
+        PLANE_HEIGHT / 2,
+        -PLANE_HEIGHT / 2,
+        0,
+        CAMERA_HEIGHT
+      );
+      shadowCamera.rotation.x = Math.PI / 2; // get the camera to look up
+      shadowGroup.add(shadowCamera);
+
+      cameraHelper = new THREE.CameraHelper(shadowCamera);
+
+      // like MeshDepthMaterial, but goes from black to transparent
+      depthMaterial = new THREE.MeshDepthMaterial();
+      depthMaterial.userData.darkness = { value: state.shadow.darkness };
+      depthMaterial.onBeforeCompile = function (shader) {
+        shader.uniforms.darkness = depthMaterial.userData.darkness;
+        shader.fragmentShader = /* glsl */ `
+						uniform float darkness;
+						${shader.fragmentShader.replace(
+              "gl_FragColor = vec4( vec3( 1.0 - fragCoordZ ), opacity );",
+              "gl_FragColor = vec4( vec3( 0.0 ), ( 1.0 - fragCoordZ ) * darkness );"
+            )}
+					`;
+      };
+
+      depthMaterial.depthTest = false;
+      depthMaterial.depthWrite = false;
+
+      horizontalBlurMaterial = new THREE.ShaderMaterial(HorizontalBlurShader);
+      horizontalBlurMaterial.depthTest = false;
+
+      verticalBlurMaterial = new THREE.ShaderMaterial(VerticalBlurShader);
+      verticalBlurMaterial.depthTest = false;
+
+      //Sets up the renderer, fetching the canvas of the HTML
+
+      const threeCanvas = document.getElementById("three-canvas");
+      renderer = new THREE.WebGLRenderer({
+        antialias: true,
+        canvas: threeCanvas,
+        alpha: true,
+      });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      // document.body.appendChild(renderer.domElement);
+
+      //
+
+      new THREE.OrbitControls(camera, threeCanvas);
+    }
+
+    // Listen for window resize
+    function onWindowResize() {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    // renderTarget --> blurPlane (horizontalBlur) --> renderTargetBlur --> blurPlane (verticalBlur) --> renderTarget
+    function blurShadow(amount) {
+      blurPlane.visible = true;
+
+      // blur horizontally and draw in the renderTargetBlur
+      blurPlane.material = horizontalBlurMaterial;
+      blurPlane.material.uniforms.tDiffuse.value = renderTarget.texture;
+      horizontalBlurMaterial.uniforms.h.value = (amount * 1) / 256;
+
+      renderer.setRenderTarget(renderTargetBlur);
+      renderer.render(blurPlane, shadowCamera);
+
+      // blur vertically and draw in the main renderTarget
+      blurPlane.material = verticalBlurMaterial;
+      blurPlane.material.uniforms.tDiffuse.value = renderTargetBlur.texture;
+      verticalBlurMaterial.uniforms.v.value = (amount * 1) / 256;
+
+      renderer.setRenderTarget(renderTarget);
+      renderer.render(blurPlane, shadowCamera);
+
+      blurPlane.visible = false;
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+
+      //
+
+      // meshes.forEach((mesh) => {
+      //   mesh.rotation.x += 0.01;
+      //   mesh.rotation.y += 0.02;
+      // });
+
+      //
+
+      // remove the background
+      const initialBackground = scene.background;
+      scene.background = null;
+
+      // force the depthMaterial to everything
+      cameraHelper.visible = false;
+      scene.overrideMaterial = depthMaterial;
+
+      // set renderer clear alpha
+      const initialClearAlpha = renderer.getClearAlpha();
+      renderer.setClearAlpha(0);
+
+      // render to the render target to get the depths
+      renderer.setRenderTarget(renderTarget);
+      renderer.render(scene, shadowCamera);
+
+      // and reset the override material
+      scene.overrideMaterial = null;
+      cameraHelper.visible = true;
+
+      blurShadow(state.shadow.blur);
+
+      // a second pass to reduce the artifacts
+      // (0.4 is the minimum blur amout so that the artifacts are gone)
+      blurShadow(state.shadow.blur * 0.4);
+
+      // reset and render the normal scene
+      renderer.setRenderTarget(null);
+      renderer.setClearAlpha(initialClearAlpha);
+      scene.background = initialBackground;
+
+      renderer.render(scene, camera);
+    }
   }, []);
 
   // //Raycaster
