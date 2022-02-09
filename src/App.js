@@ -3,6 +3,9 @@ import React, { useEffect, useRef, useState, useContext } from "react";
 // MATERIAL UI
 import Slide from "@mui/material/Slide";
 import Typography from "@mui/material/Typography";
+import FormGroup from "@mui/material/FormGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Switch from "@mui/material/Switch";
 // COLORS
 import { blue } from "@mui/material/colors";
 // THREE.js
@@ -33,6 +36,7 @@ const App = () => {
   const loaderRef = useRef();
   // const cameraRef = useRef();
   const [IFCview, setIFCview] = useState(null);
+  const [gridVisibility, setGridVisibility] = useState(true);
 
   const { currentUser } = useContext(FirebaseContext);
 
@@ -46,50 +50,39 @@ const App = () => {
     var box = new THREE.Box3().setFromObject(ifcModels[0]);
     console.log(box);
     const x =
-      (((box.max.x < 0 ? box.max.x * -1 : box.max.x) +
-      (box.min.x < 0 ? box.min.x * -1 : box.min.x))/2)-box.max.x;
+      ((box.max.x < 0 ? box.max.x * -1 : box.max.x) +
+        (box.min.x < 0 ? box.min.x * -1 : box.min.x)) /
+        2 -
+      box.max.x;
     const y = box.min.y < 0 ? box.min.y * -1 : box.min.y;
     const z =
-      (((box.max.z < 0 ? box.max.z * -1 : box.max.z) +
-      (box.min.z < 0 ? box.min.z * -1 : box.min.z))/2)-box.max.z;
-      ifcModels[0].translateX(x);
-      ifcModels[0].translateY(y);
-      ifcModels[0].translateZ(z);
-    }
-  // console.log(ifcModels);
-  // console.log(ifcModels[0] !== undefined ? ifcModels[0].modelID : "undefined");
-  // if (ifcModels[0] !== undefined) {
-  //   ifcModels[0].material = new THREE.MeshNormalMaterial();
-  // }
-  // if (ifcModels[0] !== undefined) {
-  //   ifcModels[0].material = new THREE.MeshLambertMaterial({
-  //     transparent: true,
-  //     opacity: 1,
-  //     color: new THREE.Color( 1, 0, 0 ),
-  //     depthTest: true,
-  //   });
-  // }
-
-  // console.log(new THREE.Color( 1, 0, 0 ).getHexString ());
+      ((box.max.z < 0 ? box.max.z * -1 : box.max.z) +
+        (box.min.z < 0 ? box.min.z * -1 : box.min.z)) /
+        2 -
+      box.max.z;
+    ifcModels[0].translateX(x);
+    ifcModels[0].translateY(y);
+    ifcModels[0].translateZ(z);
+  }
 
   //Creates the Three.js scene
   useEffect(() => {
     let camera, scene, renderer;
 
-    const meshes = [];
+    // const meshes = [];
 
-    const PLANE_WIDTH = 1000;
-    const PLANE_HEIGHT = 1000;
-    const CAMERA_HEIGHT =12;
+    const PLANE_WIDTH = 200;
+    const PLANE_HEIGHT = 200;
+    const CAMERA_HEIGHT = 12;
 
     const state = {
       shadow: {
-        blur: 2.5,
-        darkness: 1.5,
+        blur: 1.5,
+        darkness: 2,
         opacity: 1,
       },
       plane: {
-        color: "#ffffff",
+        color: "#ffff00",
         opacity: 0,
       },
     };
@@ -178,14 +171,14 @@ const App = () => {
       //   meshes.push(mesh);
       // }
 
-      // //Creates grids and axes in the scene
-      // const grid = new THREE.GridHelper(50, 30);
-      // scene.add(grid);
+      //Creates grids and axes in the scene
+      const grid = new THREE.GridHelper(100, 20);
+      scene.add(grid);
 
-      // const axes = new THREE.AxesHelper();
-      // axes.material.depthTest = false;
-      // axes.renderOrder = 1;
-      // scene.add(axes);
+      const axes = new THREE.AxesHelper();
+      axes.material.depthTest = false;
+      axes.renderOrder = 1;
+      scene.add(axes);
 
       // the container, if you need to move the plane just move this
       shadowGroup = new THREE.Group();
@@ -520,38 +513,79 @@ const App = () => {
           position: "absolute",
           top: 24,
           left: 24,
-          display: "inline-flex",
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "center",
-          background: "rgb(227,242,253,0.5)", // Make sure this color has an opacity of less than 1
-          backdropFilter: "blur(4px)", // This be the blur
-          borderRadius: "8px",
-          padding: "8px",
         }}
       >
-        <img
-          src="../assets/icon/house.svg"
-          alt="Vision"
+        <div
           style={{
-            height: "64px",
-            width: "64px",
+            display: "inline-flex",
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+            background: "rgb(227,242,253,0.5)", // Make sure this color has an opacity of less than 1
+            backdropFilter: "blur(4px)", // This be the blur
+            borderRadius: "8px",
+            padding: "8px",
           }}
-        />
-        {isMobile ? null : (
-          <Typography
-            variant="h5"
-            sx={{
-              color: blue[800],
-              fontWeight: "bold",
-              fontSize: "1.75rem",
-              marginLeft: "16px",
-              marginRight: "8px",
+        >
+          <img
+            src="../assets/icon/house.svg"
+            alt="Vision"
+            style={{
+              height: "64px",
+              width: "64px",
             }}
-          >
-            Vision
-          </Typography>
-        )}
+          />
+          {isMobile ? null : (
+            <Typography
+              variant="h5"
+              sx={{
+                color: blue[800],
+                fontWeight: "bold",
+                fontSize: "1.75rem",
+                marginLeft: "16px",
+                marginRight: "8px",
+              }}
+            >
+              Vision
+            </Typography>
+          )}
+        </div>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            background: "rgb(255,255,255,0.5)", // Make sure this color has an opacity of less than 1
+            backdropFilter: "blur(4px)", // This be the blur
+            borderRadius: "8px",
+            padding: "12px",
+            marginTop: "8px",
+          }}
+        >
+          <FormGroup>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={gridVisibility}
+                  onChange={(e) => {
+                    IFCview.children.forEach((child) => {
+                      if (
+                        child.type === "GridHelper" ||
+                        child.type === "AxesHelper"
+                      ) {
+                        child.visible = e.target.checked;
+                      }
+                    });
+                    setGridVisibility(e.target.checked);
+                  }}
+                />
+              }
+              label="Afficher une grille"
+            />
+          </FormGroup>
+          <p>(Éch. : 1 carreau = 5x5m)</p>
+        </div>
       </div>
       {currentUser ? (
         <canvas
