@@ -78,8 +78,8 @@ const App = () => {
 
     const meshes = [];
 
-    const PLANE_WIDTH = 100;
-    const PLANE_HEIGHT = 100;
+    const PLANE_WIDTH = 1000;
+    const PLANE_HEIGHT = 1000;
     const CAMERA_HEIGHT =12;
 
     const state = {
@@ -117,7 +117,7 @@ const App = () => {
 
       //Creates the camera (point of view of the user)
       const aspect = size.width / size.height;
-      camera = new THREE.PerspectiveCamera(75, aspect, 0.1, 100);
+      camera = new THREE.PerspectiveCamera(75, aspect, 0.1, 1000);
       camera.position.z = 15;
       camera.position.y = 13;
       camera.position.x = 8;
