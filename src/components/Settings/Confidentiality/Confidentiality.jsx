@@ -23,7 +23,7 @@ import CGU from "./CGU";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const Confidentiality = ({ openConfidentiality, setOpenConfidentiality }) => {
-  const { hash } = useLocation();
+  const { hash, pathname } = useLocation();
   const navigate = useNavigate();
 
   const [openCGU, setOpenCGU] = useState(hash === "#cgu" ? true : false);
@@ -45,7 +45,7 @@ const Confidentiality = ({ openConfidentiality, setOpenConfidentiality }) => {
 
   const handleClose = () => {
     setOpenConfidentiality(false);
-    navigate("");
+    navigate(pathname);
   };
 
   return (

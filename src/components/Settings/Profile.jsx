@@ -109,7 +109,8 @@ const Profile = ({
 
   const handleClose = useCallback(() => {
     setOpenProfile(false);
-  }, [setOpenProfile]);
+    navigate(pathname);
+  }, [setOpenProfile, navigate, pathname]);
 
   const handleOpenFileFromFirebase = useCallback(
     async (file) => {

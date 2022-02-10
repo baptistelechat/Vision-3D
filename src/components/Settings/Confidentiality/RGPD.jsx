@@ -13,19 +13,21 @@ import { useTheme } from "@mui/material/styles";
 import CloseIcon from "@mui/icons-material/Close";
 import SecurityIcon from "@mui/icons-material/Security";
 // OTHER
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 // COMPONENTS
 import RGPDrequest from "./RGPDrequest";
 
 const RGPD = ({ openRGPD, setOpenRGPD, openConfidentiality }) => {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const [openRGPDrequest, setOpenRGPDrequest] = useState(false);
 
   const handleClose = () => {
     setOpenRGPD(false);
-    navigate("");
+    navigate(pathname);
   };
 
   return (

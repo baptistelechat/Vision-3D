@@ -6,8 +6,9 @@ import Typography from "@mui/material/Typography";
 import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
 // COLORS
-import { blue } from "@mui/material/colors";
+import { blue, red } from "@mui/material/colors";
 // THREE.js
 import THREE from "./utils/three/three";
 import { IFCLoader } from "web-ifc-three/IFCLoader";
@@ -20,6 +21,7 @@ import Authentication from "./components/Authentication/Authentication";
 // OTHER
 import { SnackbarProvider } from "notistack";
 import { Toaster } from "react-hot-toast";
+import { useLocation } from "react-router-dom";
 import {
   acceleratedRaycast,
   computeBoundsTree,
@@ -34,21 +36,42 @@ import { FirebaseContext } from "./utils/firebase/firebaseContext";
 
 const App = () => {
   const loaderRef = useRef();
-  // const cameraRef = useRef();
+
   const [IFCview, setIFCview] = useState(null);
   const [gridVisibility, setGridVisibility] = useState(true);
 
-  const { currentUser } = useContext(FirebaseContext);
+  const { currentUser, username } = useContext(FirebaseContext);
+  const { pathname } = useLocation();
 
   const isMobile =
     "ontouchstart" in document.documentElement &&
     navigator.userAgent.match(/Mobi/);
 
+  const customTheme = createTheme({
+    palette: {
+      type: "light",
+      primary: {
+        main:
+          username === "123structure" || pathname.includes("123structure")
+            ? "#ffcc00"
+            : blue[800],
+        light:
+          username === "123structure" || pathname.includes("123structure")
+            ? "#fffae6"
+            : blue[50],
+      },
+      secondary: {
+        main:
+          username === "123structure" || pathname.includes("123structure")
+            ? "#f28e1c"
+            : red[800],
+      },
+    },
+  });
+
   const ifcModels = useSelector((state) => state.ifcModels.value);
-  console.log(ifcModels);
   if (ifcModels[0] !== undefined) {
     var box = new THREE.Box3().setFromObject(ifcModels[0]);
-    console.log(box);
     const x =
       ((box.max.x < 0 ? box.max.x * -1 : box.max.x) +
         (box.min.x < 0 ? box.min.x * -1 : box.min.x)) /
@@ -482,121 +505,136 @@ const App = () => {
   }
 
   return (
-    <SnackbarProvider
-      maxSnack={5}
-      anchorOrigin={{
-        vertical: "bottom",
-        horizontal: "left",
-      }}
-      TransitionComponent={Slide}
-    >
-      <Toaster position="bottom-left" reverseOrder={true} />
-      <Settings
-        IFCview={IFCview}
-        loaderRef={loaderRef}
-        preselectMat={null}
-        selectMat={null}
-      />
-      {currentUser ? (
-        <LoadFile
+    <ThemeProvider theme={customTheme}>
+      <SnackbarProvider
+        maxSnack={5}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "left",
+        }}
+        TransitionComponent={Slide}
+      >
+        <Toaster position="bottom-left" reverseOrder={true} />
+        <Settings
           IFCview={IFCview}
           loaderRef={loaderRef}
-          // preselectMat={preselectMat}
-          // selectMat={selectMat}
           preselectMat={null}
           selectMat={null}
         />
-      ) : null}
-      <Authentication />
-      <div
-        style={{
-          position: "absolute",
-          top: 24,
-          left: 24,
-        }}
-      >
-        <div
-          style={{
-            display: "inline-flex",
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "center",
-            background: "rgb(227,242,253,0.5)", // Make sure this color has an opacity of less than 1
-            backdropFilter: "blur(4px)", // This be the blur
-            borderRadius: "8px",
-            padding: "8px",
-          }}
-        >
-          <img
-            src="../assets/icon/house.svg"
-            alt="Vision"
-            style={{
-              height: "64px",
-              width: "64px",
-            }}
+        {currentUser ? (
+          <LoadFile
+            IFCview={IFCview}
+            loaderRef={loaderRef}
+            // preselectMat={preselectMat}
+            // selectMat={selectMat}
+            preselectMat={null}
+            selectMat={null}
           />
-          {isMobile ? null : (
-            <Typography
-              variant="h5"
-              sx={{
-                color: blue[800],
-                fontWeight: "bold",
-                fontSize: "1.75rem",
-                marginLeft: "16px",
-                marginRight: "8px",
-              }}
-            >
-              Vision
-            </Typography>
-          )}
-        </div>
+        ) : null}
+        <Authentication />
         <div
           style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            background: "rgb(255,255,255,0.5)", // Make sure this color has an opacity of less than 1
-            backdropFilter: "blur(4px)", // This be the blur
-            borderRadius: "8px",
-            padding: "12px",
-            marginTop: "8px",
+            position: "absolute",
+            top: 24,
+            left: 24,
           }}
         >
-          <FormGroup>
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={gridVisibility}
-                  onChange={(e) => {
-                    IFCview.children.forEach((child) => {
-                      if (
-                        child.type === "GridHelper" ||
-                        child.type === "AxesHelper"
-                      ) {
-                        child.visible = e.target.checked;
-                      }
-                    });
-                    setGridVisibility(e.target.checked);
-                  }}
-                />
-              }
-              label="Afficher une grille"
+          <div
+            style={{
+              display: "inline-flex",
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
+              background:
+                username === "123structure" || pathname.includes("123structure")
+                  ? "rgb(255,240,185,0.5)"
+                  : "rgb(227,242,253,0.5)", // Make sure this color has an opacity of less than 1
+              backdropFilter: "blur(4px)", // This be the blur
+              borderRadius: "8px",
+              padding: "8px",
+            }}
+          >
+            <img
+              src="../assets/icon/house.svg"
+              alt="Vision"
+              style={{
+                height: "64px",
+                width: "64px",
+              }}
             />
-          </FormGroup>
-          <p>(Éch. : 1 carreau = 5x5m)</p>
+            {isMobile ? null : (
+              <Typography
+                variant="h5"
+                sx={{
+                  color:
+                    username === "123structure" ||
+                    pathname.includes("123structure")
+                      ? "#f28e1c"
+                      : blue[800],
+                  fontWeight: "bold",
+                  fontSize: "1.75rem",
+                  marginLeft: "16px",
+                  marginRight: "8px",
+                }}
+              >
+                Vision
+              </Typography>
+            )}
+          </div>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              background: "rgb(255,255,255,0.5)", // Make sure this color has an opacity of less than 1
+              backdropFilter: "blur(4px)", // This be the blur
+              borderRadius: "8px",
+              padding: "12px",
+              marginTop: "8px",
+            }}
+          >
+            <FormGroup>
+              <FormControlLabel
+                control={
+                  <Switch
+                    color={
+                      username === "123structure" ||
+                      pathname.includes("123structure")
+                        ? "secondary"
+                        : "primary"
+                    }
+                    checked={gridVisibility}
+                    onChange={(e) => {
+                      IFCview.children.forEach((child) => {
+                        if (
+                          child.type === "GridHelper" ||
+                          child.type === "AxesHelper"
+                        ) {
+                          child.visible = e.target.checked;
+                        }
+                      });
+                      setGridVisibility(e.target.checked);
+                    }}
+                  />
+                }
+                label="Afficher une grille"
+              />
+            </FormGroup>
+            <p>(Éch. : 1 carreau = 5x5m)</p>
+          </div>
         </div>
-      </div>
-      {currentUser ? (
-        <canvas
-          id="three-canvas"
-          onDrop={(event) => dropHandler(event)}
-          onDragOver={(event) => dragOverHandler(event)}
-        ></canvas>
-      ) : (
-        <canvas id="three-canvas"></canvas>
-      )}
-    </SnackbarProvider>
+        {currentUser ? (
+          <canvas
+            id="three-canvas"
+            onDrop={(event) => dropHandler(event)}
+            onDragOver={(event) => dragOverHandler(event)}
+          ></canvas>
+        ) : (
+          <canvas id="three-canvas"></canvas>
+        )}
+      </SnackbarProvider>
+    </ThemeProvider>
   );
 };
 

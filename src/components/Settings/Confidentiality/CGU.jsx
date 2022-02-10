@@ -12,16 +12,18 @@ import { useTheme } from "@mui/material/styles";
 import CloseIcon from "@mui/icons-material/Close";
 import SubjectIcon from "@mui/icons-material/Subject";
 // OTHER
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const CGU = ({ openCGU, setOpenCGU, openConfidentiality }) => {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+  
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   const handleClose = () => {
     setOpenCGU(false);
-    navigate("");
+    navigate(pathname);
   };
   return (
     <Dialog

@@ -1,5 +1,5 @@
 // REACT
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 // THREE.js
 import THREE from "../utils/three/three";
 // NOTISTACK
@@ -9,8 +9,7 @@ import SpeedDial from "@mui/material/SpeedDial";
 import SpeedDialIcon from "@mui/material/SpeedDialIcon";
 import SpeedDialAction from "@mui/material/SpeedDialAction";
 import Fab from "@mui/material/Fab";
-// COLORS
-import { blueGrey, blue } from "@mui/material/colors";
+import { useTheme } from "@mui/material/styles";
 // MATERIAL UI ICON
 import CloudIcon from "@mui/icons-material/Cloud";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
@@ -35,10 +34,19 @@ import openDropboxPicker from "../utils/loadIfcFile/dropbox";
 // REDUX
 import { useDispatch, useSelector } from "react-redux";
 import { addModel, removeModel } from "../utils/redux/ifcModels";
+// FIREBASE
+import { FirebaseContext } from "../utils/firebase/firebaseContext";
+// OTHER
+import { useLocation } from "react-router-dom";
 
 const LoadFile = ({ IFCview, loaderRef, preselectMat, selectMat }) => {
   const dispatch = useDispatch();
   const ifcModels = useSelector((state) => state.ifcModels.value);
+
+  const { pathname } = useLocation();
+  const { username } = useContext(FirebaseContext);
+
+  const theme = useTheme();
 
   const [openProgress, setOpenProgress] = useState(false);
   const [percentProgress, setPercentProgress] = useState("Chargement ...");
@@ -280,7 +288,18 @@ const LoadFile = ({ IFCview, loaderRef, preselectMat, selectMat }) => {
         />
         <label htmlFor="local-button-file">
           <SpeedDialAction
-            icon={<FileDownloadIcon sx={{ fontSize: 30, color: blue[800] }} />}
+            icon={
+              <FileDownloadIcon
+                sx={{
+                  fontSize: 30,
+                  color:
+                    username === "123structure" ||
+                    pathname.includes("123structure")
+                      ? theme.palette.secondary.main
+                      : theme.palette.primary.main,
+                }}
+              />
+            }
             tooltipTitle="Charger"
             component="span"
             {...props}
@@ -352,7 +371,13 @@ const LoadFile = ({ IFCview, loaderRef, preselectMat, selectMat }) => {
             icon={
               <FontAwesomeIcon
                 icon={faGoogleDrive}
-                style={{ color: blue[800] }}
+                style={{
+                  color:
+                    username === "123structure" ||
+                    pathname.includes("123structure")
+                      ? theme.palette.secondary.main
+                      : theme.palette.primary.main,
+                }}
               />
             }
             tooltipTitle="Google Drive"
@@ -369,7 +394,12 @@ const LoadFile = ({ IFCview, loaderRef, preselectMat, selectMat }) => {
       icon: (
         <CloudIcon
           icon={faWindows}
-          sx={{ color: blue[800] }}
+          sx={{
+            color:
+              username === "123structure" || pathname.includes("123structure")
+                ? theme.palette.secondary.main
+                : theme.palette.primary.main,
+          }}
           onClick={() =>
             openOneDrivePicker(
               randomLottie,
@@ -398,7 +428,12 @@ const LoadFile = ({ IFCview, loaderRef, preselectMat, selectMat }) => {
       icon: (
         <FontAwesomeIcon
           icon={faDropbox}
-          style={{ color: blue[800] }}
+          style={{
+            color:
+              username === "123structure" || pathname.includes("123structure")
+                ? theme.palette.secondary.main
+                : theme.palette.primary.main,
+          }}
           onClick={() =>
             openDropboxPicker(
               randomLottie,
@@ -477,7 +512,7 @@ const LoadFile = ({ IFCview, loaderRef, preselectMat, selectMat }) => {
                 size: "large",
                 style: {
                   fontSize: "1.5em",
-                  backgroundColor: blue[50],
+                  backgroundColor: theme.palette.primary.light,
                 },
               }}
             />
@@ -485,7 +520,14 @@ const LoadFile = ({ IFCview, loaderRef, preselectMat, selectMat }) => {
               key="DropZone"
               icon={
                 <AttachmentIcon
-                  sx={{ fontSize: 30, color: blue[800] }}
+                  sx={{
+                    fontSize: 30,
+                    color:
+                      username === "123structure" ||
+                      pathname.includes("123structure")
+                        ? theme.palette.secondary.main
+                        : theme.palette.primary.main,
+                  }}
                   onClick={() => setOpenDropZone(true)}
                 />
               }
@@ -494,7 +536,7 @@ const LoadFile = ({ IFCview, loaderRef, preselectMat, selectMat }) => {
                 size: "large",
                 style: {
                   fontSize: "1.5em",
-                  backgroundColor: blue[50],
+                  backgroundColor: theme.palette.primary.light,
                 },
                 disabled: false,
               }}
@@ -506,7 +548,7 @@ const LoadFile = ({ IFCview, loaderRef, preselectMat, selectMat }) => {
                     size: "large",
                     style: {
                       fontSize: "1.5em",
-                      backgroundColor: blue[50],
+                      backgroundColor: theme.palette.primary.light,
                     },
                   }}
                 />
@@ -519,9 +561,7 @@ const LoadFile = ({ IFCview, loaderRef, preselectMat, selectMat }) => {
                     size: "large",
                     style: {
                       fontSize: "1.5em",
-                      backgroundColor: action.disabled
-                        ? blueGrey[50]
-                        : blue[50],
+                      backgroundColor: theme.palette.primary.light,
                     },
                     disabled: action.disabled,
                   }}

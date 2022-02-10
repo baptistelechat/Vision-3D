@@ -14,10 +14,12 @@ import CloseIcon from "@mui/icons-material/Close";
 import TranslateIcon from "@mui/icons-material/Translate";
 import CopyrightIcon from "@mui/icons-material/Copyright";
 // OTHER
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const License = ({ openLicense, setOpenLicense, openConfidentiality }) => {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const [translate, setTranslate] = useState(true);
@@ -30,7 +32,7 @@ const License = ({ openLicense, setOpenLicense, openConfidentiality }) => {
   };
   const handleClose = () => {
     setOpenLicense(false);
-    navigate("");
+    navigate(pathname);
   };
   return (
     <Dialog
