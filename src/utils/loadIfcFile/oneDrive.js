@@ -45,7 +45,7 @@ const openOneDrivePicker = async (
         const object = await loaderRef.current.loadAsync(ifcURL);
         object.name = "IFCModel";
         IFCview.add(object);
-        dispatch(addModel(object));
+        dispatch(addModel([object, files.value[0].name]));
         setOpenProgress(false);
         setPercentProgress("Chargement ...");
         enqueueSnackbar(

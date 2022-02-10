@@ -70,6 +70,9 @@ const App = () => {
   });
 
   const ifcModels = useSelector((state) => state.ifcModels.value);
+  const ifcModelsName = useSelector((state) => state.ifcModels.name);
+
+  console.log(ifcModels);
   if (ifcModels[0] !== undefined) {
     var box = new THREE.Box3().setFromObject(ifcModels[0]);
     const x =
@@ -569,12 +572,13 @@ const App = () => {
                   color:
                     username === "123structure" ||
                     pathname.includes("123structure")
-                      ? "#f28e1c"
+                      ? "#231f20"
                       : blue[800],
                   fontWeight: "bold",
                   fontSize: "1.75rem",
                   marginLeft: "16px",
                   marginRight: "8px",
+                  maxWidth: "1200px",
                 }}
               >
                 Vision
@@ -624,6 +628,42 @@ const App = () => {
             <p>(Éch. : 1 carreau = 5x5m)</p>
           </div>
         </div>
+        {isMobile && ifcModelsName !== "" ? null : (
+          <div
+            style={{
+              position: "absolute",
+              bottom: 32,
+              right: currentUser ? 104 : 24,
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
+              background:
+                username === "123structure" || pathname.includes("123structure")
+                  ? "rgb(255,240,185,0.5)"
+                  : "rgb(227,242,253,0.5)", // Make sure this color has an opacity of less than 1
+              backdropFilter: "blur(4px)", // This be the blur
+              borderRadius: "8px",
+              padding: "8px",
+              marginTop: "8px",
+            }}
+          >
+            <Typography
+              variant="h5"
+              sx={{
+                color:
+                  username === "123structure" ||
+                  pathname.includes("123structure")
+                    ? "#231f20"
+                    : blue[800],
+                // fontWeight: "bold",
+                fontSize: "1rem",
+              }}
+            >
+              {ifcModelsName.includes(".ifc") ? ifcModelsName.slice(0, -4) : ifcModelsName}
+            </Typography>
+          </div>
+        )}
         {currentUser ? (
           <canvas
             id="three-canvas"

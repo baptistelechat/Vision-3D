@@ -49,7 +49,7 @@ const firebase = async (
       const object = await loaderRef.current.loadAsync(ifcURL);
       object.name = "IFCModel";
       IFCview.add(object);
-      dispatch(addModel(object));
+      dispatch(addModel([object, file.name]));
       setOpenProgress(false);
       setPercentProgress("Chargement ...");
 

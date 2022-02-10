@@ -223,7 +223,7 @@ const LoadFile = ({ IFCview, loaderRef, preselectMat, selectMat }) => {
             const object = await loaderRef.current.loadAsync(ifcURL);
             object.name = "IFCModel";
             IFCview.add(object);
-            dispatch(addModel(object));
+            dispatch(addModel([object, metaData.title]));
             setOpenProgress(false);
             setPercentProgress("Chargement ...");
 

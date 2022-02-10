@@ -37,7 +37,7 @@ const openDropboxPicker = async (
         const object = await loaderRef.current.loadAsync(ifcUrl + "?dl=1");
         object.name = "IFCModel";
         IFCview.add(object);
-        dispatch(addModel(object));
+        dispatch(addModel([object, files[0].name]));
         setOpenProgress(false);
         setPercentProgress("Chargement ...");
         enqueueSnackbar(

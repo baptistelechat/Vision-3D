@@ -50,9 +50,10 @@ const SaveFileDialog = ({
     size: fileData.size,
   };
 
-  const handleClose = () => {
+  const handleClose = (url) => {
     setOpenSaveFileDialog(false);
     setSaveFile(false);
+    navigate(url);
   };
 
   const handleSubmit = async (event) => {
@@ -109,15 +110,12 @@ const SaveFileDialog = ({
             variant: "success",
           }
         );
-        await handleClose();
+        await handleClose(`/${username}/${fileName
+          .replace(/\s/g, "_")
+          .normalize("NFD")
+          .replace(/\p{Diacritic}/gu, "")}`);
         await setFileName("");
         await setIsLoading(false);
-        await navigate(
-          `/${username}/${fileName
-            .replace(/\s/g, "_")
-            .normalize("NFD")
-            .replace(/\p{Diacritic}/gu, "")}`
-        );
       })
       .catch(function (error) {
         console.log(error);
@@ -135,7 +133,7 @@ const SaveFileDialog = ({
   return (
     <Dialog
       fullScreen={fullScreen}
-      onClose={handleClose}
+      onClose={() => handleClose("")}
       open={openSaveFileDialog}
     >
       <DialogTitle>
@@ -150,7 +148,7 @@ const SaveFileDialog = ({
           <h3>Enregistrer le fichier ?</h3>
         </Stack>
         <IconButton
-          onClick={handleClose}
+          onClick={()=>handleClose("")}
           style={{ right: "12px", top: "20px", position: "absolute" }}
         >
           <CloseIcon />
@@ -293,7 +291,7 @@ const SaveFileDialog = ({
                 color="primary"
                 aria-label="add"
                 sx={{ mt: "16px", mb: "16px", mr: "16px" }}
-                onClick={handleClose}
+                onClick={()=>handleClose("")}
               >
                 <DoNotDisturbIcon sx={{ mr: "8px" }} />
                 NON
