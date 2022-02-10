@@ -585,8 +585,57 @@ const App = () => {
               </Typography>
             )}
           </div>
+          {isMobile ? null : (
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                background: "rgb(255,255,255,0.5)", // Make sure this color has an opacity of less than 1
+                backdropFilter: "blur(4px)", // This be the blur
+                borderRadius: "8px",
+                padding: "12px",
+                marginTop: "8px",
+              }}
+            >
+              <FormGroup>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      color={
+                        username === "123structure" ||
+                        pathname.includes("123structure")
+                          ? "secondary"
+                          : "primary"
+                      }
+                      checked={gridVisibility}
+                      onChange={(e) => {
+                        IFCview.children.forEach((child) => {
+                          if (
+                            child.type === "GridHelper" ||
+                            child.type === "AxesHelper"
+                          ) {
+                            child.visible = e.target.checked;
+                          }
+                        });
+                        setGridVisibility(e.target.checked);
+                      }}
+                    />
+                  }
+                  label="Afficher une grille"
+                />
+              </FormGroup>
+              <p>(Éch. : 1 carreau = 5x5m)</p>
+            </div>
+          )}
+        </div>
+        {isMobile ? (
           <div
             style={{
+              position: "absolute",
+              bottom: currentUser ? 96 : 24,
+              right: 24,
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
@@ -627,8 +676,8 @@ const App = () => {
             </FormGroup>
             <p>(Éch. : 1 carreau = 5x5m)</p>
           </div>
-        </div>
-        {isMobile && ifcModelsName !== "" ? null : (
+        ) : null}
+        {isMobile || ifcModelsName === "" ? null : (
           <div
             style={{
               position: "absolute",
@@ -660,7 +709,9 @@ const App = () => {
                 fontSize: "1rem",
               }}
             >
-              {ifcModelsName.includes(".ifc") ? ifcModelsName.slice(0, -4) : ifcModelsName}
+              {ifcModelsName.includes(".ifc")
+                ? ifcModelsName.slice(0, -4)
+                : ifcModelsName}
             </Typography>
           </div>
         )}

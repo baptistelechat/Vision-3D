@@ -343,8 +343,6 @@ const LoadFile = ({ IFCview, loaderRef, preselectMat, selectMat }) => {
               position: "absolute",
               bottom: 24,
               right: 24,
-              // backgroundColor: blue[00],
-              color: "white",
             }}
             component="span"
             {...props}
