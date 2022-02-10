@@ -107,15 +107,18 @@ const Profile = ({
     return true;
   }, [dispatch, loaderRef, ifcModels, IFCview, preselectMat, selectMat]);
 
-  const handleClose = useCallback(() => {
-    setOpenProfile(false);
-    navigate(pathname);
-  }, [setOpenProfile, navigate, pathname]);
+  const handleClose = useCallback(
+    (url) => {
+      setOpenProfile(false);
+      navigate(url);
+    },
+    [setOpenProfile, navigate]
+  );
 
   const handleOpenFileFromFirebase = useCallback(
     async (file) => {
       await navigate(file.url);
-      await handleClose();
+      await handleClose(file.url);
       await firebase(
         randomLottie,
         resetView,
@@ -202,7 +205,11 @@ const Profile = ({
         percentProgress={percentProgress}
         randomLottieFile={randomLottieFile}
       />
-      <Dialog fullScreen={fullScreen} onClose={handleClose} open={openProfile}>
+      <Dialog
+        fullScreen={fullScreen}
+        onClose={() => handleClose(ifcModels[0] !== undefined ? pathname : "")}
+        open={openProfile}
+      >
         <DialogTitle>
           <Stack
             direction="row"
@@ -216,7 +223,9 @@ const Profile = ({
           </Stack>
           <IconButton
             style={{ right: "12px", top: "12px", position: "absolute" }}
-            onClick={handleClose}
+            onClick={() =>
+              handleClose(ifcModels[0] !== undefined ? pathname : "")
+            }
           >
             <CloseIcon />
           </IconButton>
