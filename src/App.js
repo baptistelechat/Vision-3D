@@ -47,6 +47,11 @@ const App = () => {
     "ontouchstart" in document.documentElement &&
     navigator.userAgent.match(/Mobi/);
 
+  const openLink = (url) => {
+    const newWindow = window.open(url, "_blank", "noopener,noreferrer");
+    if (newWindow) newWindow.opener = null;
+  };
+
   const customTheme = createTheme({
     palette: {
       type: "light",
@@ -556,16 +561,44 @@ const App = () => {
               borderRadius: "8px",
               padding: "8px",
             }}
+            onClick={() => {
+              username === "123structure" || pathname.includes("123structure")
+                ? openLink("https://www.123structure.fr")
+                : console.log("Not available");
+            }}
           >
             <img
-              src="../assets/icon/house.svg"
+              src={
+                username === "123structure" || pathname.includes("123structure")
+                  ? "../assets/123structure.png"
+                  : "../assets/icon/house.svg"
+              }
               alt="Vision"
               style={{
                 height: "64px",
                 width: "64px",
               }}
             />
-            {isMobile ? null : (
+            {isMobile ? null : username === "123structure" ||
+              pathname.includes("123structure") ? (
+              <Typography
+                variant="h5"
+                sx={{
+                  color:
+                    username === "123structure" ||
+                    pathname.includes("123structure")
+                      ? "#231f20"
+                      : blue[800],
+                  fontWeight: "bold",
+                  fontSize: "1.75rem",
+                  marginLeft: "16px",
+                  marginRight: "8px",
+                  maxWidth: "1200px",
+                }}
+              >
+                Notre site internet
+              </Typography>
+            ) : (
               <Typography
                 variant="h5"
                 sx={{
@@ -584,6 +617,18 @@ const App = () => {
                 Vision
               </Typography>
             )}
+            {username === "123structure" ||
+            pathname.includes("123structure") ? (
+              <img
+                src="../assets/cursor.png"
+                alt="cursor"
+                style={{
+                  height: "50px",
+                  width: "50px",
+                  marginTop: "8px",
+                }}
+              />
+            ) : null}
           </div>
           {isMobile ? null : (
             <div
