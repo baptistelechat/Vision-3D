@@ -161,6 +161,14 @@ const Profile = ({
       if (projects[0] !== undefined) {
         console.log(projects[0]);
         handleOpenFileFromFirebase(projects[0]);
+        setTimeout(async () => {
+          await enqueueSnackbar(
+            "Aucun modèle n'apparaît ? Essayer d'actualiser la page",
+            {
+              variant: "info",
+            }
+          );
+        }, 5000);
       } else {
         console.log("🏡 project : no project found");
         await enqueueSnackbar("Aucun projet correspondant à votre recherche", {
