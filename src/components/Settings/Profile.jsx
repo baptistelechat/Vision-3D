@@ -81,30 +81,46 @@ const Profile = ({
         selectMat
       );
     }
-    const selectedObject = IFCview.getObjectByName("IFCModel");
-    if (!(selectedObject instanceof THREE.Object3D)) return false;
-    // for better memory management and performance
-    if (selectedObject.geometry) {
-      selectedObject.geometry.dispose();
-      dispatch(removeModel());
-    }
-    if (selectedObject.material) {
-      if (selectedObject.material instanceof Array) {
-        // for better memory management and performance
-        selectedObject.material.forEach((material) => material.dispose());
-        dispatch(removeModel());
-      } else {
-        // for better memory management and performance
-        selectedObject.material.dispose();
+    const selectedObject = [
+      IFCview.getObjectByName("IFCModel"),
+      IFCview.getObjectByName("IFCWALLSTANDARDCASE"),
+      IFCview.getObjectByName("IFCSLAB"),
+      IFCview.getObjectByName("IFCCOLUMN"),
+      IFCview.getObjectByName("IFCBEAM"),
+      IFCview.getObjectByName("IFCFOOTING"),
+    ];
+
+    selectedObject.forEach((object) => {
+      if (!(object instanceof THREE.Object3D)) return false;
+      // for better memory management and performance
+      if (object.geometry) {
+        object.geometry.dispose();
         dispatch(removeModel());
       }
+      if (object.material) {
+        if (object.material instanceof Array) {
+          // for better memory management and performance
+          object.material.forEach((material) => material.dispose());
+          dispatch(removeModel());
+        } else {
+          // for better memory management and performance
+          object.material.dispose();
+          dispatch(removeModel());
+        }
+      }
+      if (object.parent) {
+        object.parent.remove(object);
+        dispatch(removeModel());
+      }
+
+      // the parent might be the scene or another Object3D, but it is sure to be removed this way
+      return true;
+    });
+
+    for (let i = IFCview.children.length - 1; i >= 0; i--) {
+      if (IFCview.children[i].type === "Mesh")
+        IFCview.remove(IFCview.children[i]);
     }
-    if (selectedObject.parent) {
-      selectedObject.parent.remove(selectedObject);
-      dispatch(removeModel());
-    }
-    // the parent might be the scene or another Object3D, but it is sure to be removed this way
-    return true;
   }, [dispatch, loaderRef, ifcModels, IFCview, preselectMat, selectMat]);
 
   const handleClose = useCallback(

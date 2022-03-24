@@ -12,6 +12,14 @@ import { blue, red } from "@mui/material/colors";
 // THREE.js
 import THREE from "./utils/three/three";
 import { IFCLoader } from "web-ifc-three/IFCLoader";
+import {
+  IFCWALLSTANDARDCASE,
+  IFCSLAB,
+  IFCBEAM,
+  IFCCOLUMN,
+  IFCFOOTING,
+} from "web-ifc";
+
 import { HorizontalBlurShader } from "./utils/three/shaders/HorizontalBlurShader";
 import { VerticalBlurShader } from "./utils/three/shaders/VerticalBlurShader";
 // COMPONENTS
@@ -42,6 +50,103 @@ const App = () => {
 
   const { currentUser, username } = useContext(FirebaseContext);
   const { pathname } = useLocation();
+
+  console.log(IFCview);
+
+  const categories = {
+    IFCWALLSTANDARDCASE,
+    IFCSLAB,
+    IFCBEAM,
+    IFCCOLUMN,
+    IFCFOOTING,
+  };
+
+  // Stores the created subsets
+  const subsets = {};
+
+  // Gets the name of a category
+  function getName(category) {
+    const names = Object.keys(categories);
+    return names.find((name) => categories[name] === category);
+  }
+
+  async function setupAllCategories(position) {
+    const allCategories = Object.values(categories);
+    for (let i = 0; i < allCategories.length; i++) {
+      const category = allCategories[i];
+      await setupCategory(category, position);
+    }
+  }
+
+  // Creates a new subset and configures the checkbox
+  async function setupCategory(category, position) {
+    subsets[category] = await newSubsetOfType(category, position);
+    // await styleCategory(category, position);
+  }
+
+  // Creates a new subset containing all elements of a category
+  const newSubsetOfType = async (category, position) => {
+    const ids = await getAll(category);
+    if (loaderRef.current && ifcModels[0] !== undefined) {
+      const ifcClasseName = getName(category);
+      const material = new THREE.MeshLambertMaterial({
+        transparent: true,
+        opacity: 1,
+        // color:
+        //   ifcClasseName === "IFCWALLSTANDARDCASE"
+        //     ? 0x1565c0
+        //     : ifcClasseName === "IFCSLAB"
+        //     ? 0xf55442
+        //     : ifcClasseName === "IFCCOLUMN"
+        //     ? 0xf5f542
+        //     : ifcClasseName === "IFCBEAM"
+        //     ? 0x42f554
+        //     : ifcClasseName === "IFCFOOTING"
+        //     ? 0x7143f0
+        //     : 0x000000,
+        color:
+          ifcClasseName === "IFCWALLSTANDARDCASE"
+            ? 0xbdbdbd
+            : ifcClasseName === "IFCSLAB"
+            ? 0x757575
+            : ifcClasseName === "IFCCOLUMN"
+            ? 0xbdbdbd
+            : ifcClasseName === "IFCBEAM"
+            ? 0xbdbdbd
+            : ifcClasseName === "IFCFOOTING"
+            ? 0x424242
+            : 0x000000,
+        depthTest: true,
+      });
+
+      if (ids !== []) {
+        const subset = loaderRef.current.ifcManager.createSubset({
+          modelID: 0,
+          scene: IFCview,
+          ids,
+          removePrevious: true,
+          customID: category.toString(),
+          material,
+        });
+
+        subset.translateX(position[0]);
+        subset.translateY(position[1]);
+        subset.translateZ(position[2]);
+
+        subset.name = ifcClasseName;
+
+        return subset;
+      }
+    }
+  };
+
+  // Gets the IDs of all the items of a specific category
+  const getAll = async (category) => {
+    if (loaderRef.current && ifcModels[0] !== undefined) {
+      const manager = loaderRef.current.ifcManager;
+      return manager.getAllItemsOfType(0, category, false);
+    }
+  };
 
   const isMobile =
     "ontouchstart" in document.documentElement &&
@@ -77,24 +182,30 @@ const App = () => {
   const ifcModels = useSelector((state) => state.ifcModels.value);
   const ifcModelsName = useSelector((state) => state.ifcModels.name);
 
-  console.log(ifcModels);
-  if (ifcModels[0] !== undefined) {
-    var box = new THREE.Box3().setFromObject(ifcModels[0]);
-    const x =
-      ((box.max.x < 0 ? box.max.x * -1 : box.max.x) +
-        (box.min.x < 0 ? box.min.x * -1 : box.min.x)) /
-        2 -
-      box.max.x;
-    const y = box.min.y < 0 ? box.min.y * -1 : box.min.y;
-    const z =
-      ((box.max.z < 0 ? box.max.z * -1 : box.max.z) +
-        (box.min.z < 0 ? box.min.z * -1 : box.min.z)) /
-        2 -
-      box.max.z;
-    ifcModels[0].translateX(x);
-    ifcModels[0].translateY(y);
-    ifcModels[0].translateZ(z);
-  }
+  useEffect(() => {
+    console.log(ifcModels);
+    if (ifcModels[0] !== undefined) {
+      var box = new THREE.Box3().setFromObject(ifcModels[0]);
+      const x =
+        ((box.max.x < 0 ? box.max.x * -1 : box.max.x) +
+          (box.min.x < 0 ? box.min.x * -1 : box.min.x)) /
+          2 -
+        box.max.x;
+      const y = box.min.y < 0 ? box.min.y * -1 : box.min.y;
+      const z =
+        ((box.max.z < 0 ? box.max.z * -1 : box.max.z) +
+          (box.min.z < 0 ? box.min.z * -1 : box.min.z)) /
+          2 -
+        box.max.z;
+
+      ifcModels[0].translateX(x);
+      ifcModels[0].translateY(y);
+      ifcModels[0].translateZ(z);
+
+      console.log();
+      setupAllCategories([x, y, z]);
+    }
+  }, [ifcModels]);
 
   //Creates the Three.js scene
   useEffect(() => {
